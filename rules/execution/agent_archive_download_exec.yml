@@ -1,0 +1,49 @@
+# Rule rationale: Detects download-then-extract-then-execute chains that bypass
+# pipe-based RCE detection. Common in skill abuse where a malicious skill
+# downloads an archive and runs an embedded installer script.
+id: agent-archive-download-exec-001
+title: Archive Download and Execution via Shell Chaining
+description: |
+  Detects command patterns where a remote archive is downloaded (curl/wget),
+  extracted (tar/unzip), and then an embedded script is executed. This is
+  a common evasion of pipe-to-shell detection because the download, extract,
+  and execute steps are chained with && or ; rather than piped.
+author: AgentShield
+date: "2026-02-22"
+status: production
+level: critical
+logsource:
+  product: agentshield
+  category: agent_events
+tags:
+  - attack.execution
+  - attack.t1059
+  - attack.t1204
+detection:
+  selection_curl_tar_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'curl'
+      - 'tar'
+    command|re: '(\./|install\.sh|setup\.sh|chmod \+x)'
+  selection_wget_tar_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'wget'
+      - 'tar'
+    command|re: '(\./|install\.sh|setup\.sh|chmod \+x)'
+  selection_curl_unzip_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'curl'
+      - 'unzip'
+    command|re: '(\./|install\.sh|setup\.sh|chmod \+x)'
+  selection_wget_unzip_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'wget'
+      - 'unzip'
+    command|re: '(\./|install\.sh|setup\.sh|chmod \+x)'
+  condition: selection_curl_tar_exec or selection_wget_tar_exec or selection_curl_unzip_exec or selection_wget_unzip_exec
+falsepositives:
+  - Legitimate build scripts that download and install dependencies from trusted sources

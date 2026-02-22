@@ -31,4 +31,8 @@ detection:
     command|contains:
       - 'wget --post-file'
       - 'wget --post-data'
-  condition: selection_curl_post or selection_curl_upload or selection_wget_post
+  # Piped data to netcat (common exfil channel)
+  selection_nc_pipe:
+    event_type: tool_call
+    command|re: '\|\s*(nc|ncat)\s'
+  condition: selection_curl_post or selection_curl_upload or selection_wget_post or selection_nc_pipe
