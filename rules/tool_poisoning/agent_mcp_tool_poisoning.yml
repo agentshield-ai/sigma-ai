@@ -28,16 +28,7 @@ detection:
       - 'OVERRIDE:'
       - 'IGNORE PREVIOUS'
       - 'NEW INSTRUCTIONS:'
-  selection_long_imperative:
-    event_type: tool_description
-    description|contains:
-      - 'ALWAYS'
-      - 'MUST'
-      - 'NEVER'
-      - 'IMMEDIATELY'
-      - 'EXECUTE'
-      - 'RUN'
-    condition_length: len(description) > 500
+  # Length-based imperative heuristics are intentionally omitted here to stay Sigma-compatible.
   selection_ansi_escape:
     event_type: tool_description
     description|contains:
@@ -59,9 +50,8 @@ detection:
       - 'display: none'
       - 'visibility: hidden'
       - 'font-size: 0'
-  condition: selection_system_instructions or (selection_long_imperative and condition_length) or selection_ansi_escape or selection_response_ansi or selection_hidden_instructions
+  condition: selection_system_instructions or selection_ansi_escape or selection_response_ansi or selection_hidden_instructions
 falsepositives:
   - Legitimate tool descriptions with detailed usage instructions
   - Terminal applications that legitimately use ANSI codes
   - Documentation or help text containing system keywords
-level: high

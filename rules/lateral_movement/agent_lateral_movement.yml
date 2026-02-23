@@ -75,4 +75,3 @@ falsepositives:
   - Authorized backup and synchronization operations
   - Infrastructure management and deployment
   - Distributed computing tasks
-level: critical

@@ -66,4 +66,3 @@ falsepositives:
   - Legitimate memory updates during conversation
   - User-requested biographical information updates
   - System-initiated memory cleanup or organization
-level: critical

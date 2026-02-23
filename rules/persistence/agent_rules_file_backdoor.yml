@@ -61,4 +61,3 @@ falsepositives:
   - Legitimate Unicode characters for proper text rendering
   - Non-Latin scripts requiring special Unicode handling
   - Copy-paste artifacts from web content
-level: high

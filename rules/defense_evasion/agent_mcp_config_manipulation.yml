@@ -65,4 +65,3 @@ falsepositives:
   - Legitimate MCP configuration changes by authorized users
   - Initial setup of MCP servers
   - Development and testing configurations
-level: critical

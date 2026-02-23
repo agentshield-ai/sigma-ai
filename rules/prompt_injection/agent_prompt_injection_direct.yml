@@ -60,4 +60,3 @@ detection:
 falsepositives:
   - Legitimate discussions about AI safety and jailbreaking research
   - Educational content about prompt injection
-level: critical

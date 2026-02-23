@@ -67,4 +67,3 @@ falsepositives:
   - Legitimate CSS styling in retrieved web content
   - Unicode characters used for proper text formatting
   - Documentation about LLM tokens and instruction formats
-level: high

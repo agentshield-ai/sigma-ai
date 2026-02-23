@@ -38,9 +38,13 @@ detection:
       - 'grep API_KEY'
       - 'grep SECRET'
       - 'grep TOKEN'
-  selection_full_env_dump:
+  selection_full_env_dump_with_secret_intent:
     event_type: tool_call
     command|contains:
-      - 'printenv'
-      - 'export -p'
-  condition: selection_env_grep or selection_env_secret_keywords or selection_full_env_dump
+      - 'printenv | grep -i'
+      - 'export -p | grep -i'
+      - 'env | grep -i'
+  condition: selection_env_grep or selection_env_secret_keywords or selection_full_env_dump_with_secret_intent
+falsepositives:
+  - Legitimate debugging of non-sensitive environment variables
+  - CI diagnostics focused on non-secret configuration
