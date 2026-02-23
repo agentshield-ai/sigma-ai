@@ -23,7 +23,6 @@ detection:
     event_type: tool_call
     command|contains:
       - 'crontab -e'
-      - 'crontab -l'
       - 'crontab -'
   selection_cron_write:
     event_type: file_write

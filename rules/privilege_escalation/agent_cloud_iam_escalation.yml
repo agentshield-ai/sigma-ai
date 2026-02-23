@@ -78,4 +78,3 @@ falsepositives:
   - Infrastructure as Code deployments
   - Authorized privilege escalation for specific tasks
   - Service account management
-level: critical

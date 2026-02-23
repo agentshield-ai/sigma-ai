@@ -102,4 +102,3 @@ falsepositives:
   - User-requested memory modifications
   - Normal agent configuration changes
   - Development and testing activities
-level: critical

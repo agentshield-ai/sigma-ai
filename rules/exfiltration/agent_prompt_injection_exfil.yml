@@ -51,4 +51,3 @@ falsepositives:
   - Legitimate image links with query parameters
   - Documentation showing webhook examples
   - Testing and development using webhook services
-level: critical

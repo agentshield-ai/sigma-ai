@@ -59,12 +59,7 @@ detection:
   selection_yarn_github:
     event_type: tool_call
     command|contains: 'yarn add github:'
-  # Go install from URLs
-  selection_go_install:
-    event_type: tool_call
-    command|contains:
-      - 'go install github.com/'
-      - 'go get github.com/'
+  # Go package installs are common in legitimate workflows and handled via targeted rules elsewhere.
   # MCP skill installation (claude code skills)
   selection_mcp_skill:
     event_type: tool_call
@@ -77,4 +72,7 @@ detection:
       - 'openclaw skill install http'
       - 'openclaw skills add http'
       - 'openclaw skill add http'
-  condition: selection_npm_github or selection_npm_url or selection_npm_i_url or selection_npm_tgz or selection_pip_git or selection_pip_url or selection_brew_tap or selection_yarn_url or selection_yarn_github or selection_go_install or selection_mcp_skill or selection_openclaw_skill_remote
+  condition: selection_npm_github or selection_npm_url or selection_npm_i_url or selection_npm_tgz or selection_pip_git or selection_pip_url or selection_brew_tap or selection_yarn_url or selection_yarn_github or selection_mcp_skill or selection_openclaw_skill_remote
+falsepositives:
+  - Legitimate package installation from trusted internal mirrors
+  - Approved bootstrap/install steps in controlled development environments

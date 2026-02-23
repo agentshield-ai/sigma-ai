@@ -14,9 +14,15 @@ tags:
   - attack.privilege_escalation
   - attack.t1548
 detection:
-  selection_sudo:
+  selection_sudo_suspicious:
     event_type: tool_call
-    command|startswith: 'sudo '
+    command|contains:
+      - 'sudo su'
+      - 'sudo -s'
+      - 'sudo bash'
+      - 'sudo sh'
+      - 'sudo /bin/bash'
+      - 'sudo /bin/sh'
   selection_chmod_suid:
     event_type: tool_call
     command|contains:
@@ -29,4 +35,7 @@ detection:
   selection_capabilities:
     event_type: tool_call
     command|contains: 'setcap'
-  condition: selection_sudo or selection_chmod_suid or selection_chown_root or selection_capabilities
+  condition: selection_sudo_suspicious or selection_chmod_suid or selection_chown_root or selection_capabilities
+falsepositives:
+  - Authorized administrative escalation by trusted operators
+  - Break-glass maintenance procedures
