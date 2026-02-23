@@ -3,6 +3,8 @@ title: Untrusted Package or Skill Installation
 description: |
   Detects attempts to install packages or skills from untrusted sources
   such as direct URLs, GitHub repositories, or tarball archives.
+  Includes OpenClaw skill-install workflows where remote skill definitions
+  are fetched directly by URL.
   This pattern may indicate supply chain attacks or installation of
   malicious dependencies.
 author: AgentShield
@@ -67,4 +69,12 @@ detection:
   selection_mcp_skill:
     event_type: tool_call
     command|contains: 'mcp install http'
-  condition: selection_npm_github or selection_npm_url or selection_npm_i_url or selection_npm_tgz or selection_pip_git or selection_pip_url or selection_brew_tap or selection_yarn_url or selection_yarn_github or selection_go_install or selection_mcp_skill
+  # OpenClaw remote skill definition installation by URL
+  selection_openclaw_skill_remote:
+    event_type: tool_call
+    command|contains:
+      - 'openclaw skills install http'
+      - 'openclaw skill install http'
+      - 'openclaw skills add http'
+      - 'openclaw skill add http'
+  condition: selection_npm_github or selection_npm_url or selection_npm_i_url or selection_npm_tgz or selection_pip_git or selection_pip_url or selection_brew_tap or selection_yarn_url or selection_yarn_github or selection_go_install or selection_mcp_skill or selection_openclaw_skill_remote

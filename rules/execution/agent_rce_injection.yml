@@ -56,4 +56,11 @@ detection:
     command|contains|all:
       - 'bash -c'
       - 'wget'
-  condition: selection_curl_bash or selection_curl_sh or selection_wget_bash or selection_wget_sh or selection_curl_python or selection_wget_python or selection_bash_c_curl or selection_bash_c_wget
+  # Process substitution: bash <(curl ...) or sh <(curl ...)
+  selection_procsub_curl:
+    event_type: tool_call
+    command|re: '(bash|sh)\s+<\(curl'
+  selection_procsub_wget:
+    event_type: tool_call
+    command|re: '(bash|sh)\s+<\(wget'
+  condition: selection_curl_bash or selection_curl_sh or selection_wget_bash or selection_wget_sh or selection_curl_python or selection_wget_python or selection_bash_c_curl or selection_bash_c_wget or selection_procsub_curl or selection_procsub_wget
