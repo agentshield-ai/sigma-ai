@@ -1,0 +1,76 @@
+title: Living-off-the-Land Data Exfiltration
+id: af74dcc8-c033-5847-a7c9-a3f6eb0ef3b4
+related:
+  - id: agent-lotl-exfiltration-001
+    type: obsoletes
+  - id: a14b9074-91c3-51f3-9a6b-d027e993c003
+    type: similar
+  - id: 74dee137-ffb8-54c8-862f-4a98a61f63ee
+    type: similar
+status: test
+description: |
+  Detects legitimate tools repurposed for data exfiltration via alternative
+  protocols. Covers git push to arbitrary HTTP remotes, SSH reverse/local/
+  dynamic tunnels, openssl encrypted channels, Python HTTP servers, and
+  netcat listeners. These bypass curl/wget-focused exfiltration rules.
+references:
+  - https://attack.mitre.org/techniques/T1048/
+  - https://attack.mitre.org/techniques/T1572/
+  - https://arxiv.org/abs/2403.04783
+author: AgentShield
+date: "2026-02-26"
+modified: "2026-02-26"
+tags:
+  - attack.exfiltration
+  - attack.t1048
+  - attack.command_and_control
+  - attack.t1572
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_git_push_url:
+    event_type: tool_call
+    command|contains|all:
+      - 'git push'
+      - 'http'
+  selection_git_remote_add:
+    event_type: tool_call
+    command|contains|all:
+      - 'git remote add'
+      - 'http'
+  selection_ssh_tunnel_reverse:
+    event_type: tool_call
+    command|contains|all:
+      - 'ssh'
+      - '-R '
+  selection_ssh_tunnel_local:
+    event_type: tool_call
+    command|contains|all:
+      - 'ssh'
+      - '-L '
+  selection_ssh_tunnel_dynamic:
+    event_type: tool_call
+    command|contains|all:
+      - 'ssh'
+      - '-D '
+  selection_openssl_connect:
+    event_type: tool_call
+    command|contains:
+      - 'openssl s_client'
+      - 'openssl s_server'
+  selection_python_http_server:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'http.server'
+  selection_nc_listen:
+    event_type: tool_call
+    command|contains:
+      - 'nc -l'
+      - 'ncat -l'
+  condition: 1 of selection_*
+falsepositives:
+  - Developers using git push to legitimate HTTP remotes such as GitHub or GitLab
+  - System administrators using SSH tunnels for authorised remote access to internal services
+level: medium

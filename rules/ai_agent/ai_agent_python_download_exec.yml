@@ -1,0 +1,73 @@
+title: Python Download and Execute Remote Code
+id: 5e6a3d2e-0983-5e22-9fb1-6cfc27baa291
+related:
+  - id: agent-python-download-exec-001
+    type: obsoletes
+  - id: c65a9620-e989-5a2c-b993-c81a6c049a84
+    type: similar
+  - id: a935a04a-61b2-5b55-a608-407a2048949a
+    type: similar
+status: stable
+description: |
+  Detects Python-based download-and-execute patterns that bypass curl/wget
+  detection rules. Covers urllib and requests used with exec/eval to fetch
+  and run remote code, dynamic imports via urlopen, and httpx-based
+  variants. This is a critical indicator of remote code execution via
+  scripting language capabilities.
+references:
+  - https://attack.mitre.org/techniques/T1059/
+  - https://attack.mitre.org/techniques/T1105/
+  - https://arxiv.org/abs/2403.04783
+author: AgentShield
+date: "2026-02-26"
+modified: "2026-02-26"
+tags:
+  - attack.execution
+  - attack.t1059
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_urllib_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'urllib'
+      - 'exec'
+  selection_requests_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'requests'
+      - 'exec'
+  selection_urllib_eval:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'urllib'
+      - 'eval'
+  selection_requests_eval:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'requests'
+      - 'eval'
+  selection_urllib_import:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'urlopen'
+      - '__import__'
+  selection_httpx_exec:
+    event_type: tool_call
+    command|contains|all:
+      - 'python'
+      - 'httpx'
+      - 'exec'
+  condition: selection_urllib_exec or selection_requests_exec or selection_urllib_eval or selection_requests_eval or selection_urllib_import or selection_httpx_exec
+falsepositives:
+  - Dynamic plugin systems that fetch and execute approved code modules from internal registries
+  - Interactive Python notebooks that download and run trusted analysis scripts from internal URLs
+level: critical
