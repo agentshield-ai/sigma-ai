@@ -1,8 +1,6 @@
 title: Shell Eval and Variable Obfuscation
 id: b1a10452-843b-540d-827a-aa3bcded8ba9
 related:
-  - id: agent-shell-eval-obfuscation-001
-    type: obsoletes
   - id: a935a04a-61b2-5b55-a608-407a2048949a
     type: similar
 status: stable
@@ -20,7 +18,7 @@ author: AgentShield
 date: "2026-02-26"
 modified: "2026-02-26"
 tags:
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1027
   - attack.execution
   - attack.t1059

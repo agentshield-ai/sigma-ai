@@ -1,8 +1,6 @@
 title: Shell Configuration Modification
 id: 1e785c77-6d77-5c79-ae24-6a389f9ef7f1
 related:
-  - id: agent-shell-config-001
-    type: obsoletes
   - id: d12c1b8c-4ee7-5548-947b-a1627bdc98dc
     type: similar
 status: stable

@@ -1,8 +1,5 @@
 title: OpenClaw Suspicious Session Spawn Activity
 id: 376e4fd2-341f-5e11-b3fc-d76555ffa0fd
-related:
-  - id: openclaw-session-spawn-abuse-001
-    type: obsoletes
 status: test
 description: |
   Detects OpenClaw session_spawn events and related patterns that may
@@ -19,8 +16,7 @@ modified: "2026-02-24"
 tags:
   - attack.execution
   - attack.t1059
-  - attack.defense_evasion
-  - openclaw
+  - attack.defense-evasion
 logsource:
   product: ai_agent
   category: agent_events

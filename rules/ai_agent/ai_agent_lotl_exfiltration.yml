@@ -1,8 +1,6 @@
 title: Living-off-the-Land Data Exfiltration
 id: af74dcc8-c033-5847-a7c9-a3f6eb0ef3b4
 related:
-  - id: agent-lotl-exfiltration-001
-    type: obsoletes
   - id: a14b9074-91c3-51f3-9a6b-d027e993c003
     type: similar
   - id: 74dee137-ffb8-54c8-862f-4a98a61f63ee
@@ -23,7 +21,7 @@ modified: "2026-02-26"
 tags:
   - attack.exfiltration
   - attack.t1048
-  - attack.command_and_control
+  - attack.command-and-control
   - attack.t1572
 logsource:
   product: ai_agent

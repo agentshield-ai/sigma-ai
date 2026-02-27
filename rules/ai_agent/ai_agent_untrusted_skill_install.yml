@@ -1,8 +1,5 @@
 title: Untrusted Package or Skill Installation
 id: 8f715d20-5097-5a36-810f-5c8b9652a17b
-related:
-  - id: agent-untrusted-skill-install-001
-    type: obsoletes
 status: stable
 description: |
   Detects attempts to install packages or skills from untrusted sources

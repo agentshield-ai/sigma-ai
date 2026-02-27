@@ -1,8 +1,6 @@
 title: Remote Code Execution via Piped Script Download
 id: c65a9620-e989-5a2c-b993-c81a6c049a84
 related:
-  - id: agent-rce-injection-001
-    type: obsoletes
   - id: 76eb614c-cea3-5aaa-ae79-aeb242cb1f12
     type: similar
 status: stable
@@ -20,7 +18,7 @@ modified: "2026-02-24"
 tags:
   - attack.execution
   - attack.t1059
-  - attack.defense_evasion
+  - attack.defense-evasion
 logsource:
   product: ai_agent
   category: agent_events

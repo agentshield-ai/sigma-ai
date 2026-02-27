@@ -1,8 +1,5 @@
 title: OpenClaw Memory File Manipulation
 id: 9b0994b9-c923-55bd-9e84-c112a104f20d
-related:
-  - id: openclaw-memory-poisoning-001
-    type: obsoletes
 status: test
 description: |
   Detects malicious modifications to OpenClaw workspace context files
@@ -20,7 +17,6 @@ tags:
   - attack.t1546
   - attack.collection
   - attack.t1119
-  - openclaw
 logsource:
   product: ai_agent
   category: agent_events

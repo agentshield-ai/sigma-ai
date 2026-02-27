@@ -1,8 +1,5 @@
 title: Prompt Injection via File Write
 id: a0fc6a5a-7c68-5396-94d5-4096c8e5b013
-related:
-  - id: agent-write-prompt-injection-001
-    type: obsoletes
 status: stable
 description: |
   Detects file write operations where the content contains prompt injection
@@ -16,7 +13,7 @@ author: AgentShield
 date: "2026-02-17"
 modified: "2026-02-24"
 tags:
-  - attack.initial_access
+  - attack.initial-access
   - attack.t1566
 logsource:
   product: ai_agent

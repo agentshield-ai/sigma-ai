@@ -1,8 +1,5 @@
 title: Steganographic Data Hiding
 id: 083d7427-a932-5e34-85b8-0867ad7eb18c
-related:
-  - id: agent-steganographic-exfil-001
-    type: obsoletes
 status: test
 description: |
   Detects the use of steganographic tools and techniques that could be
@@ -18,7 +15,7 @@ modified: "2026-02-24"
 tags:
   - attack.exfiltration
   - attack.t1048
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1027
 logsource:
   product: ai_agent

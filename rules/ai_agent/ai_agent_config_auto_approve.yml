@@ -1,8 +1,5 @@
 title: Auto-Approve Configuration Changes
 id: 440a1431-0683-58c2-83b5-ccad310b764f
-related:
-  - id: agent-config-autoapprove-001
-    type: obsoletes
 status: stable
 description: |
   Detects modifications to configuration files that enable automatic
@@ -16,9 +13,9 @@ author: AgentShield
 date: "2026-02-16"
 modified: "2026-02-24"
 tags:
-  - attack.privilege_escalation
+  - attack.privilege-escalation
   - attack.t1548
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1112
 logsource:
   product: ai_agent

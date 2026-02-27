@@ -1,8 +1,5 @@
 title: SpAIware-Style Memory Manipulation
 id: 3823b1dd-f61b-5b25-8f8f-6f72214d9fa7
-related:
-  - id: agent-memory-poisoning-001
-    type: obsoletes
 status: test
 description: |
   Detects SpAIware-style attacks that manipulate AI agent memory or

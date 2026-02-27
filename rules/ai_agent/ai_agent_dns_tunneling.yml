@@ -1,8 +1,6 @@
 title: Potential DNS Tunneling or Encoded Data Transfer
 id: bc7cb351-27ea-501d-b32f-daee393f1b35
 related:
-  - id: agent-dns-tunnel-001
-    type: obsoletes
   - id: 18ccf235-86e0-57ad-9cf0-83fa81cffb09
     type: similar
 status: stable

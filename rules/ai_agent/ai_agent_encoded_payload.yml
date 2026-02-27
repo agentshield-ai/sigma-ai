@@ -1,8 +1,5 @@
 title: Encoded or Obfuscated Command Execution
 id: a935a04a-61b2-5b55-a608-407a2048949a
-related:
-  - id: agent-encoded-payload-001
-    type: obsoletes
 status: stable
 description: |
   Detects base64-encoded payloads piped to shell execution, obfuscated
@@ -15,7 +12,7 @@ author: AgentShield
 date: "2026-02-04"
 modified: "2026-02-24"
 tags:
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1027
 logsource:
   product: ai_agent

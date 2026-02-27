@@ -1,8 +1,5 @@
 title: Hidden Unicode in AI Rule Files
 id: 78b34f4d-5fde-57a5-905d-00fd92ed359c
-related:
-  - id: agent-rules-file-backdoor-001
-    type: obsoletes
 status: test
 description: |
   Detects hidden Unicode characters in AI assistant rule files that could
@@ -19,7 +16,7 @@ modified: "2026-02-24"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1564
 logsource:
   product: ai_agent

@@ -1,8 +1,5 @@
 title: OpenClaw Suspicious File Write to Sensitive Paths
 id: db43664e-2408-5e70-9b63-dcb0fabc8c5f
-related:
-  - id: openclaw-suspicious-file-write-001
-    type: obsoletes
 status: stable
 description: |
   Detects OpenClaw file write or edit operations targeting sensitive system
@@ -19,7 +16,6 @@ tags:
   - attack.persistence
   - attack.t1546
   - attack.t1053
-  - openclaw
 logsource:
   product: ai_agent
   category: agent_events

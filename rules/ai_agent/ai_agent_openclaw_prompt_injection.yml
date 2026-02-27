@@ -1,8 +1,5 @@
 title: OpenClaw Prompt Injection in Tool Outputs
 id: 109b3a23-92b2-529f-b77c-8d4dd88f7e66
-related:
-  - id: openclaw-prompt-injection-001
-    type: obsoletes
 status: test
 description: |
   Detects prompt injection attempts within OpenClaw tool call responses
@@ -17,11 +14,10 @@ author: AgentShield
 date: "2026-02-16"
 modified: "2026-02-24"
 tags:
-  - attack.initial_access
+  - attack.initial-access
   - attack.t1566
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1562
-  - openclaw
 logsource:
   product: ai_agent
   category: agent_events

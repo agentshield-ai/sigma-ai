@@ -1,8 +1,5 @@
 title: Environment Variable Enumeration for Secrets
 id: 65ed67cc-3366-5d03-a5cf-cbd15cc5c266
-related:
-  - id: agent-env-enum-001
-    type: obsoletes
 status: stable
 description: |
   Detects commands that enumerate environment variables, which commonly
@@ -15,7 +12,7 @@ author: AgentShield
 date: "2026-02-17"
 modified: "2026-02-24"
 tags:
-  - attack.credential_access
+  - attack.credential-access
   - attack.t1552.001
   - attack.discovery
   - attack.t1082

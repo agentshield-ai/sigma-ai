@@ -1,8 +1,5 @@
 title: MCP Configuration File Tampering
 id: 1207eccb-8dbf-52e5-bb6b-d5502a43c22a
-related:
-  - id: agent-mcp-config-manipulation-001
-    type: obsoletes
 status: test
 description: |
   Detects unauthorized modifications to MCP configuration files including
@@ -18,7 +15,7 @@ modified: "2026-02-24"
 tags:
   - attack.persistence
   - attack.t1547
-  - attack.privilege_escalation
+  - attack.privilege-escalation
   - attack.t1548
 logsource:
   product: ai_agent

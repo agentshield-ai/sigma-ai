@@ -1,8 +1,5 @@
 title: Network Reconnaissance Activity
 id: 5ab0c6d8-c202-5f02-b71c-f0228052c20d
-related:
-  - id: agent-network-recon-001
-    type: obsoletes
 status: test
 description: |
   Detects network scanning and reconnaissance activities that may indicate

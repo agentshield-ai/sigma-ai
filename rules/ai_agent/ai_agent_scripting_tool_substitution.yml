@@ -1,8 +1,6 @@
 title: Scripting Language Tool Substitution
 id: ba8e8ccf-b67b-5c55-8054-b55a52f51aa3
 related:
-  - id: agent-scripting-tool-substitution-001
-    type: obsoletes
   - id: 74dee137-ffb8-54c8-862f-4a98a61f63ee
     type: similar
   - id: a935a04a-61b2-5b55-a608-407a2048949a

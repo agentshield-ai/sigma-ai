@@ -1,8 +1,5 @@
 title: Archive Download and Execution via Shell Chaining
 id: b3501634-d992-5452-a4b5-163f1502c151
-related:
-  - id: agent-archive-download-exec-001
-    type: obsoletes
 status: stable
 description: |
   Detects command patterns where a remote archive is downloaded (curl/wget),

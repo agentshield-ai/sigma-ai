@@ -1,8 +1,5 @@
 title: OpenClaw MCP Configuration Tampering
 id: c6651188-df04-513f-a86f-35f898b4e92a
-related:
-  - id: openclaw-mcp-manipulation-001
-    type: obsoletes
 status: test
 description: |
   Detects unauthorized modifications to OpenClaw MCP configuration files
@@ -19,9 +16,8 @@ modified: "2026-02-24"
 tags:
   - attack.persistence
   - attack.t1547
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1112
-  - openclaw
 logsource:
   product: ai_agent
   category: agent_events
@@ -42,7 +38,8 @@ detection:
   selection_untrusted_plugin_install:
     source: openclaw
     event_type: plugin_installation
-    source_url|not|contains:
+  filter_trusted_plugin_sources:
+    source_url|contains:
       - 'github.com/openclaw-official'
       - 'official.openclaw.org'
       - 'openclaw.ai/plugins'
@@ -81,7 +78,7 @@ detection:
       - '"security_checks": false'
       - '"verify_plugins": false'
       - '"sandbox_mode": false'
-  condition: selection_openclaw_config or selection_config_plugin_modification or selection_untrusted_plugin_install or selection_dangerous_plugin_permissions or selection_plugin_from_http or selection_local_plugin_modification or selection_mcp_server_addition or selection_skill_installation_bypass or selection_config_security_disable
+  condition: selection_openclaw_config or selection_config_plugin_modification or (selection_untrusted_plugin_install and not filter_trusted_plugin_sources) or selection_dangerous_plugin_permissions or selection_plugin_from_http or selection_local_plugin_modification or selection_mcp_server_addition or selection_skill_installation_bypass or selection_config_security_disable
 falsepositives:
   - Legitimate OpenClaw plugin installation from authorised third-party sources
   - Development environments where sandbox mode is intentionally disabled

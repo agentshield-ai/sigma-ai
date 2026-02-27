@@ -1,8 +1,5 @@
 title: Data Exfiltration via HTTP
 id: a14b9074-91c3-51f3-9a6b-d027e993c003
-related:
-  - id: agent-data-exfil-001
-    type: obsoletes
 status: stable
 description: |
   Detects commands that POST or upload file contents to external URLs,

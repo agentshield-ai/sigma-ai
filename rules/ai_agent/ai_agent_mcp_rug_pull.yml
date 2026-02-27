@@ -1,8 +1,5 @@
 title: MCP Tool Description Changes (Rug Pull)
 id: 43a31200-6894-5c9b-a187-1cd0a11af2b3
-related:
-  - id: agent-mcp-rug-pull-001
-    type: obsoletes
 status: test
 description: |
   Detects changes in MCP tool descriptions between loads, particularly
@@ -18,7 +15,7 @@ author: AgentShield
 date: "2026-02-16"
 modified: "2026-02-24"
 tags:
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1036
   - attack.persistence
   - attack.t1546

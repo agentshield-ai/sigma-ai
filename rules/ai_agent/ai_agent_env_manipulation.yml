@@ -1,8 +1,5 @@
 title: Environment Variable Manipulation
 id: 94e5f1ad-d61b-5266-8bf3-5fb91c0d4970
-related:
-  - id: agent-env-manip-001
-    type: obsoletes
 status: stable
 description: |
   Detects PATH hijacking, LD_PRELOAD injection, and manipulation of

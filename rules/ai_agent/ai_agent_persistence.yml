@@ -1,8 +1,6 @@
 title: Persistence Mechanism Installation
 id: d12c1b8c-4ee7-5548-947b-a1627bdc98dc
 related:
-  - id: agent-persistence-001
-    type: obsoletes
   - id: 1e785c77-6d77-5c79-ae24-6a389f9ef7f1
     type: similar
 status: stable

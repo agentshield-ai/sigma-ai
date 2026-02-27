@@ -1,8 +1,5 @@
 title: Indirect Prompt Injection in Retrieved Content
 id: 24bc5b40-f601-5055-aa6d-0252c7a23a36
-related:
-  - id: agent-prompt-injection-indirect-001
-    type: obsoletes
 status: stable
 description: |
   Detects indirect prompt injection markers in content retrieved by AI agents
@@ -18,7 +15,7 @@ modified: "2026-02-24"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1564
 logsource:
   product: ai_agent

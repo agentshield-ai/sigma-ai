@@ -1,8 +1,6 @@
 title: Enhanced DNS Exfiltration
 id: 18ccf235-86e0-57ad-9cf0-83fa81cffb09
 related:
-  - id: agent-exfil-via-dns-001
-    type: obsoletes
   - id: bc7cb351-27ea-501d-b32f-daee393f1b35
     type: similar
 status: test
@@ -20,7 +18,7 @@ modified: "2026-02-24"
 tags:
   - attack.exfiltration
   - attack.t1048
-  - attack.command_and_control
+  - attack.command-and-control
   - attack.t1071
 logsource:
   product: ai_agent
@@ -73,7 +71,8 @@ detection:
     command|contains|all:
       - '@'
       - 'nslookup'
-    command|not|contains:
+  filter_known_dns_servers:
+    command|contains:
       - '@8.8.8.8'
       - '@1.1.1.1'
       - '@208.67.222.222'
@@ -83,7 +82,7 @@ detection:
     subdomain_count: '>5'
     # Custom: requires AgentShield DNS query analysis
     domain_entropy: '>3.5'
-  condition: selection_dns_tunneling_tools or selection_nslookup_exfil or selection_dig_exfil or selection_base64_dns_queries or selection_long_dns_queries or selection_hex_encoded_dns or selection_suspicious_dns_tools or selection_dns_over_https or selection_custom_dns_server or selection_dns_exfil_patterns
+  condition: selection_dns_tunneling_tools or selection_nslookup_exfil or selection_dig_exfil or selection_base64_dns_queries or selection_long_dns_queries or selection_hex_encoded_dns or selection_suspicious_dns_tools or selection_dns_over_https or (selection_custom_dns_server and not filter_known_dns_servers) or selection_dns_exfil_patterns
 falsepositives:
   - Legitimate DNS diagnostics and troubleshooting using dig or nslookup
   - DNS-over-HTTPS usage by privacy-focused browser configurations

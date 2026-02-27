@@ -1,8 +1,5 @@
 title: System File Modification
 id: 89404989-df81-5ae1-9b23-d9e845e9be65
-related:
-  - id: agent-sys-tamper-001
-    type: obsoletes
 status: stable
 description: |
   Detects writes to critical system directories and binaries such as

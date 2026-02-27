@@ -1,8 +1,5 @@
 title: Suspicious MCP Tool Descriptions
 id: 27eee8c9-af55-5190-8601-1e7b365afc99
-related:
-  - id: agent-mcp-tool-poisoning-001
-    type: obsoletes
 status: test
 description: |
   Detects MCP tool descriptions containing system-level instructions,
@@ -20,7 +17,7 @@ modified: "2026-02-24"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1027
 logsource:
   product: ai_agent

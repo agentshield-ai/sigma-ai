@@ -1,8 +1,6 @@
 title: Python Download and Execute Remote Code
 id: 5e6a3d2e-0983-5e22-9fb1-6cfc27baa291
 related:
-  - id: agent-python-download-exec-001
-    type: obsoletes
   - id: c65a9620-e989-5a2c-b993-c81a6c049a84
     type: similar
   - id: a935a04a-61b2-5b55-a608-407a2048949a
@@ -24,7 +22,7 @@ modified: "2026-02-26"
 tags:
   - attack.execution
   - attack.t1059
-  - attack.command_and_control
+  - attack.command-and-control
   - attack.t1105
 logsource:
   product: ai_agent

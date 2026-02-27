@@ -1,8 +1,5 @@
 title: Reverse Shell Attempt
 id: 74dee137-ffb8-54c8-862f-4a98a61f63ee
-related:
-  - id: agent-reverse-shell-001
-    type: obsoletes
 status: stable
 description: |
   Detects commands that establish reverse shells, allowing an attacker

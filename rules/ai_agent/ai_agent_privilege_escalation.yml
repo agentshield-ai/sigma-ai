@@ -1,8 +1,5 @@
 title: Privilege Escalation Attempt
 id: ecc81ba6-4c08-5171-845b-e65daf432843
-related:
-  - id: agent-privesc-001
-    type: obsoletes
 status: stable
 description: |
   Detects sudo usage, setuid changes, ownership changes to root,
@@ -14,7 +11,7 @@ author: AgentShield
 date: "2026-02-04"
 modified: "2026-02-24"
 tags:
-  - attack.privilege_escalation
+  - attack.privilege-escalation
   - attack.t1548
 logsource:
   product: ai_agent

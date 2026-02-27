@@ -1,8 +1,5 @@
 title: OpenClaw Data Exfiltration via Network Upload
 id: d6e3b11d-4b06-5574-8802-1c28bd4dd2db
-related:
-  - id: openclaw-network-exfiltration-001
-    type: obsoletes
 status: stable
 description: |
   Detects OpenClaw exec tool calls that upload data to external servers
@@ -18,7 +15,6 @@ modified: "2026-02-24"
 tags:
   - attack.exfiltration
   - attack.t1048
-  - openclaw
 logsource:
   product: ai_agent
   category: agent_events

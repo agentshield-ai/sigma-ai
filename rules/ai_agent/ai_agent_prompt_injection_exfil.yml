@@ -1,8 +1,5 @@
 title: Markdown Image Exfiltration Pattern
 id: e6e58cd1-d05a-5512-b3fb-3b6a38784ad9
-related:
-  - id: agent-prompt-injection-exfil-001
-    type: obsoletes
 status: stable
 description: |
   Detects markdown image syntax with encoded data in URL parameters that

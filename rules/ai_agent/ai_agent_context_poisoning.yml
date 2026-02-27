@@ -1,8 +1,5 @@
 title: RAG and Context Manipulation
 id: 4e438202-0742-5a3b-9062-064fa4b2d6fc
-related:
-  - id: agent-context-poisoning-001
-    type: obsoletes
 status: experimental
 description: |
   Detects context poisoning attacks where instructions are embedded in
@@ -18,9 +15,9 @@ author: AgentShield
 date: "2026-02-16"
 modified: "2026-02-24"
 tags:
-  - attack.defense_evasion
+  - attack.defense-evasion
   - attack.t1562
-  - attack.initial_access
+  - attack.initial-access
   - attack.t1566
 logsource:
   product: ai_agent
