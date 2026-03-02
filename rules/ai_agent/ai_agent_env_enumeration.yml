@@ -10,7 +10,7 @@ references:
   - https://attack.mitre.org/techniques/T1082/
 author: AgentShield
 date: "2026-02-17"
-modified: "2026-02-24"
+modified: "2026-03-02"
 tags:
   - attack.credential-access
   - attack.t1552.001
@@ -20,6 +20,7 @@ logsource:
   product: ai_agent
   category: agent_events
 detection:
+  # env/printenv piped to grep for secret-related keywords
   selection_env_grep:
     event_type: tool_call
     command|contains:
@@ -28,6 +29,7 @@ detection:
       - 'printenv | grep'
       - 'printenv |grep'
       - 'set | grep'
+  # Standalone grep for secret keywords (may target files or pipes)
   selection_env_secret_keywords:
     event_type: tool_call
     command|contains:
@@ -41,12 +43,28 @@ detection:
       - 'grep API_KEY'
       - 'grep SECRET'
       - 'grep TOKEN'
+  # Full environment dump — bare commands or piped to anything
   selection_full_env_dump:
     event_type: tool_call
     command|contains:
       - 'printenv'
       - 'export -p'
-  condition: selection_env_grep or selection_env_secret_keywords or selection_full_env_dump
+  selection_env_bare:
+    event_type: tool_call
+    command|re: '(^|\s|;|&&|\|)env(\s*$|\s*\||\s+[^=])'
+  # env piped to any post-processor (sort, tee, less, head, etc.)
+  selection_env_piped:
+    event_type: tool_call
+    command|contains:
+      - 'env | sort'
+      - 'env |sort'
+      - 'env | less'
+      - 'env | head'
+      - 'env | tail'
+      - 'env | tee'
+      - 'env | cat'
+      - 'env | wc'
+  condition: selection_env_grep or selection_env_secret_keywords or selection_full_env_dump or selection_env_bare or selection_env_piped
 falsepositives:
   - Developers debugging environment variable configuration
   - CI/CD pipelines that inspect environment for configuration validation
