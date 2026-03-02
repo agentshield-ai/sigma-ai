@@ -9,7 +9,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-04"
-modified: "2026-02-24"
+modified: "2026-03-02"
 tags:
   - attack.exfiltration
   - attack.t1048
@@ -17,18 +17,19 @@ logsource:
   product: ai_agent
   category: agent_events
 detection:
+  # curl POST/PUT with flags potentially interleaved (e.g. curl -sS -X POST)
   selection_curl_post:
     event_type: tool_call
-    command|contains:
-      - 'curl -X POST'
-      - 'curl --data'
-      - 'curl -d @'
-      - 'curl -F file=@'
+    command|re:
+      - 'curl\b.*\s-X\s+POST\b'
+      - 'curl\b.*\s--data\b'
+      - 'curl\b.*\s-d\s+@'
+      - 'curl\b.*\s-F\s+file=@'
   selection_curl_upload:
     event_type: tool_call
-    command|contains:
-      - 'curl -T '
-      - 'curl --upload-file'
+    command|re:
+      - 'curl\b.*\s-T\s'
+      - 'curl\b.*\s--upload-file\b'
   selection_wget_post:
     event_type: tool_call
     command|contains:

@@ -12,7 +12,7 @@ references:
   - https://attack.mitre.org/techniques/T1546/
 author: AgentShield
 date: "2026-02-04"
-modified: "2026-02-24"
+modified: "2026-03-02"
 tags:
   - attack.persistence
   - attack.t1546
@@ -40,7 +40,11 @@ detection:
       - '.profile'
       - '.bash_profile'
       - 'authorized_keys'
-  condition: selection_shell_append or selection_ssh_keys or selection_write_tool
+  # Edit/Write tool calls targeting shell config files
+  selection_edit_write_tool:
+    event_type: tool_call
+    command|re: '(Edit|Write):.*(\.bashrc|\.zshrc|\.profile|\.bash_profile|authorized_keys)'
+  condition: selection_shell_append or selection_ssh_keys or selection_write_tool or selection_edit_write_tool
 falsepositives:
   - Legitimate shell customisation by developers adding aliases or PATH entries
   - Package managers that update shell profiles during installation
