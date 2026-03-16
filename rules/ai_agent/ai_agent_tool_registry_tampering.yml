@@ -1,0 +1,47 @@
+title: Tool Registry Description Tampering with Embedded Instructions
+id: 20812cdc-0a02-53f1-aabb-0aba1857547d
+status: stable
+description: |
+  Detects modifications to a tool's name, description, or input-schema fields
+  in the agent tool registry where the description contains imperative
+  natural-language instructions rather than documentation prose — a supply-chain
+  attack that causes the model to invoke the tool with attacker-chosen arguments
+  or bypass intended workflows without changing any executable code. Schema
+  changes unaccompanied by a version bump are a strong signal of unauthorised
+  tampering. Catching this at registration or reload time prevents model
+  manipulation before it can influence any agent session.
+references:
+  - https://attack.mitre.org/techniques/T1195/002/
+  - https://repello.ai/blog/agentic-ai-security-threats-2026
+author: AgentShield
+date: "2026-03-16"
+modified: "2026-03-16"
+tags:
+  - attack.defense-evasion
+  - attack.t1195.002
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_schema_write:
+    event_type: tool_call
+    command|contains:
+      - 'register_tool'
+      - 'update_tool'
+      - 'patch_tool_schema'
+      - 'tool_registry_write'
+      - 'mcp_tool_register'
+  selection_instruction_in_description:
+    arguments|re: '(?i)"description"\s*:\s*"[^"]*\b(always\s+include|first\s+call|send\s+(output|results|data)\s+to\s+https?://|call\s+this\s+(before|after)|do\s+not\s+log|ignore\s+the\s+above)[^"]*"'
+  selection_no_version_bump:
+    arguments|re: '(?i)"description"\s*:[^}]*(?!"version")(?!"schema_version")'
+    command|contains:
+      - 'update_tool'
+      - 'patch_tool_schema'
+  condition: selection_schema_write and (selection_instruction_in_description or selection_no_version_bump)
+falsepositives:
+  - Internal developer tooling that writes conversational examples or usage
+    notes inline within description fields during legitimate development
+  - Auto-generated OpenAPI-to-MCP converters that embed usage guidance
+    strings in description fields without version metadata
+level: high

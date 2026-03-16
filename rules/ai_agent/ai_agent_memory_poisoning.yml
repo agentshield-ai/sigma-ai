@@ -1,73 +1,45 @@
-title: SpAIware-Style Memory Manipulation
-id: 3823b1dd-f61b-5b25-8f8f-6f72214d9fa7
-status: test
+title: Agent Persistent Memory Poisoning via Behavioural Modifier Injection
+id: 043f4e6f-5354-5bc0-8046-ac279b2763ca
+status: stable
 description: |
-  Detects SpAIware-style attacks that manipulate AI agent memory or
-  biographical information to establish persistence across sessions.
-  These attacks inject malicious instructions that persist in memory
-  and influence future agent behavior.
+  Detects write operations to an agent long-term memory store that contain
+  behavioural-modifier directives combined with persona overrides or
+  data-exfiltration instructions — the hallmark of a memory poisoning attack.
+  Because poisoned memories persist across sessions and are silently recalled
+  in future conversations, a single successful injection can permanently alter
+  agent behaviour without any further attacker interaction. Catching the write
+  at ingest time prevents the persistent foothold from being established.
 references:
-  - https://attack.mitre.org/techniques/T1546/
-  - https://embracethered.com/blog/posts/2024/claude-computer-use-c2-the-spaiware/
-  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  - https://attack.mitre.org/techniques/T1565/001/
+  - https://repello.ai/blog/agentic-ai-security-threats-2026
 author: AgentShield
-date: "2026-02-16"
-modified: "2026-02-24"
+date: "2026-03-16"
+modified: "2026-03-16"
 tags:
   - attack.persistence
-  - attack.t1546
-  - attack.collection
-  - attack.t1119
+  - attack.t1565.001
 logsource:
   product: ai_agent
   category: agent_events
 detection:
-  selection_unsolicited_memory:
-    event_type: memory_update
-    user_requested: false
-    memory_tool_invoked: true
-  selection_bio_manipulation:
-    event_type: biography_update
-    user_requested: false
-    bio_tool_invoked: true
-  selection_memory_urls:
-    event_type: memory_update
-    content|contains:
-      - 'http://'
-      - 'https://'
-      - '![](http'
-      - 'webhook'
-      - '.site'
-  selection_persistent_instructions:
-    event_type: memory_update
-    content|contains:
-      - 'always include'
-      - 'for every response'
-      - 'in all future'
-      - 'remember to'
-      - 'IMPORTANT:'
-      - 'SYSTEM:'
-  selection_markdown_exfil:
-    event_type: memory_update
-    content|re: '!\[.*\]\(https?://[^\s)]+\?[^\s)]*=[A-Za-z0-9+/=%]{10,}\)'
-  selection_cross_session_persistence:
-    event_type: memory_update
-    content|contains:
-      - 'next session'
-      - 'future conversations'
-      - 'permanent instruction'
-      - 'override system'
-  selection_hidden_memory_markers:
-    event_type: memory_update
-    content|contains:
-      - 'color:white'
-      - 'display:none'
-      - 'visibility:hidden'
-      - '\u200b'
-      - '\ufeff'
-  condition: selection_unsolicited_memory or selection_bio_manipulation or selection_memory_urls or selection_persistent_instructions or selection_markdown_exfil or selection_cross_session_persistence or selection_hidden_memory_markers
+  selection_memory_write:
+    event_type: tool_call
+    command|contains:
+      - 'memory_write'
+      - 'memory_store'
+      - 'upsert_memory'
+      - 'save_memory'
+      - 'add_memory'
+  selection_behavioural_modifier:
+    # Matches phrases that modify persistent agent behaviour across sessions
+    arguments|re: '(?i)(in\s+all\s+future\s+sessions|from\s+this\s+point\s+forward|override\s+your\s+(system|instructions)|disregard\s+your\s+(instructions|training))'
+  selection_exfil_or_persona:
+    # Matches persona hijacking or covert exfiltration directives embedded in memory writes
+    arguments|re: '(?i)(you\s+are\s+now\s+a|your\s+new\s+(role|persona|identity)|do\s+not\s+(reveal|disclose|mention)\s+this\s+instruction|send\s+(data|content|results)\s+to\s+https?://)'
+  condition: selection_memory_write and (selection_behavioural_modifier or selection_exfil_or_persona)
 falsepositives:
-  - Legitimate memory updates during conversation
-  - User-requested biographical information updates
-  - System-initiated memory cleanup or organisation
-level: critical
+  - Legitimate personalisation instructions written by the user themselves
+    (e.g. respond in a preferred language, formatting preferences)
+  - Onboarding flows that persist user-approved behavioural preferences to
+    the memory store during initial configuration
+level: high
