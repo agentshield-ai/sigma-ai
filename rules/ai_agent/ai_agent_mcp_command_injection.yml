@@ -1,0 +1,46 @@
+title: MCP Server Command Injection via Shell Metacharacters
+id: ae6e3887-4265-5882-b550-31a2386cfab8
+status: stable
+description: |
+  Detects shell metacharacters in MCP (Model Context Protocol) tool call input
+  parameters, indicative of command injection attempts against MCP servers that pass
+  user-supplied input unsanitised to system commands (e.g. CVE-2026-4192 in
+  quip-mcp-server 1.0.0). A successful injection allows a low-privilege remote
+  attacker to execute arbitrary OS commands within the agent's execution environment.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://www.sentinelone.com/vulnerability-database/cve-2026-4192/
+author: AgentShield
+date: "2026-03-23"
+modified: "2026-03-23"
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_shell_metachar:
+    event_type: tool_call
+    tool_input|contains:
+      - ';'
+      - '&&'
+      - '||'
+      - '`'
+      - '$('
+      - '${IFS}'
+      - '\n'
+      - '| '
+      - ' |'
+  selection_mcp_context:
+    event_type: tool_call
+    tool_source|contains:
+      - mcp
+      - mcp-server
+      - model-context-protocol
+  condition: selection_shell_metachar and selection_mcp_context
+falsepositives:
+  - Legitimate tool inputs containing pipe characters for data formatting (e.g. Markdown tables)
+  - Shell-scripting helper agents intentionally constructing pipeline commands on behalf of an authorised developer
+  - CI/CD agents building shell commands from approved templates
+level: critical
