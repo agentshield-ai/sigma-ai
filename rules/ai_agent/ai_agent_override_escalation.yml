@@ -1,0 +1,32 @@
+title: Repeated Security Override Pattern in Session
+id: e5b3c7d4-6f1a-7b2c-d4e5-override-es01
+status: test
+description: |
+  Detects sessions where blocked actions have been overridden multiple times,
+  suggesting possible automation bias exploitation. When users repeatedly
+  override security blocks, it may indicate that an attacker is leveraging
+  misleading agent output to convince the human to approve dangerous actions,
+  as described in the "Human-in-the-Loop Traps" category by Franklin et al.
+  (2026).
+references:
+  - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
+  - https://attack.mitre.org/techniques/T1204/
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+author: AgentShield
+date: "2026-04-06"
+tags:
+  - attack.defense-evasion
+  - attack.t1204
+  - attack.execution
+  - attack.t1204.002
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection:
+    session.override_count|re: '^([3-9]|[1-9][0-9]+)$'
+  condition: selection
+level: high
+falsepositives:
+  - Legitimate user overriding false positives during development
+  - Security testing sessions

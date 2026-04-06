@@ -1,0 +1,29 @@
+title: Approval Fatigue - Excessive Require-Approval Verdicts in Session
+id: d4a2b6c3-5e0f-6a1b-c3d4-approval-ft01
+status: test
+description: |
+  Detects sessions with an unusually high number of medium-severity alerts,
+  which may indicate an attacker deliberately generating many require_approval
+  verdicts to exhaust human attention. This is a key vector in the
+  "Human-in-the-Loop Traps" category identified by Franklin et al. (2026),
+  where approval fatigue leads humans to rubber-stamp dangerous actions.
+references:
+  - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
+  - https://attack.mitre.org/techniques/T1204/
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+author: AgentShield
+date: "2026-04-06"
+tags:
+  - attack.defense-evasion
+  - attack.t1204
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection:
+    session.approval_count|re: '^([5-9]|[1-9][0-9]+)$'
+  condition: selection
+level: medium
+falsepositives:
+  - Legitimate batch operations that trigger many medium-severity rules
+  - Security testing sessions generating synthetic alerts

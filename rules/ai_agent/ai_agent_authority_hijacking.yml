@@ -1,0 +1,70 @@
+title: Authority Hijacking and Social Engineering in Agent Input
+id: b7e2f4a1-3c8d-5e9f-a1b2-authority-hj01
+status: test
+description: |
+  Detects semantic manipulation attempts where adversarial content impersonates
+  authority figures or trusted sources to influence AI agent behaviour. These
+  patterns exploit the agent's tendency to defer to perceived authority, a key
+  vector in the "Semantic Manipulation Traps" category identified by Franklin
+  et al. (2026).
+references:
+  - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
+  - https://attack.mitre.org/techniques/T1656/
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+author: AgentShield
+date: "2026-04-06"
+tags:
+  - attack.initial-access
+  - attack.t1566
+  - attack.defense-evasion
+  - attack.t1656
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_authority_impersonation:
+    event_type:
+      - user_input
+      - content_retrieval
+      - tool_response
+    message|contains:
+      - 'as your system administrator'
+      - 'I am the developer'
+      - 'this is an authorized override'
+      - 'management has approved'
+      - 'the security team has verified'
+      - 'per company policy you must'
+      - 'IT department requires'
+      - 'your supervisor has instructed'
+      - 'official directive from'
+      - 'compliance requires you to'
+  selection_source_spoofing:
+    event_type:
+      - content_retrieval
+      - tool_response
+    content|contains:
+      - 'official documentation states'
+      - 'from the security team:'
+      - 'verified by the development team'
+      - 'according to internal policy'
+      - 'signed by the administrator'
+      - 'approved by the CISO'
+      - 'per the governance board'
+  selection_trust_exploitation:
+    event_type:
+      - user_input
+      - content_retrieval
+      - tool_response
+    message|contains:
+      - 'trusted by all major enterprises'
+      - 'industry-standard practice'
+      - 'recommended by security experts'
+      - 'certified and verified'
+      - 'endorsed by the platform'
+      - 'this is the official procedure'
+  condition: selection_authority_impersonation or selection_source_spoofing or selection_trust_exploitation
+falsepositives:
+  - Legitimate documentation referencing organisational policies
+  - Internal communications with genuine authority directives
+  - Security training materials discussing social engineering
+level: high

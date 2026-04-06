@@ -1,6 +1,6 @@
 title: Agent Lateral Movement and Pivoting
 id: a76493f4-047c-5eab-994f-df740faa5180
-status: experimental
+status: test
 description: |
   Detects lateral movement patterns where AI agents pivot to other systems
   after network reconnaissance, transfer sensitive files to external hosts,
@@ -11,7 +11,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-04-06"
 tags:
   - attack.lateral-movement
   - attack.t1021
