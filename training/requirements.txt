@@ -1,0 +1,13 @@
+# Core (needed for reward function, eval, and data extraction)
+PyYAML>=6.0
+
+# Training (install on GPU machine only)
+# unsloth           # pip install unsloth (follow unsloth.ai for install)
+# trl>=1.0          # pip install trl[vllm]
+# datasets>=2.0
+# torch>=2.0
+# transformers>=4.40
+# peft>=0.10
+# accelerate>=0.30
+# bitsandbytes>=0.43
+# vllm>=0.5         # optional, for fast GRPO generation
