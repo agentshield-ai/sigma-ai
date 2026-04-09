@@ -1,0 +1,54 @@
+title: AI-Induced Lateral Movement via Filesystem and Cloud Enumeration
+id: 8e4f5d74-7aa5-5b67-a647-aad470bf4030
+status: test
+description: |
+  Detects AI agent tool calls that perform broad filesystem or cloud storage
+  enumeration, a pattern consistent with AI-Induced Lateral Movement (AILM /
+  Clinejection) where prompt injection in low-trust inputs (GitHub issue bodies,
+  EC2 metadata tags, CRM comments) hijacks agent tool permissions to traverse
+  connected systems. Recursive listing commands across multiple paths or cloud
+  buckets in a single task are high-confidence indicators of injected lateral
+  movement instructions.
+references:
+  - https://attack.mitre.org/techniques/T1083/
+  - https://infosecwriteups.com/prompt-injection-grew-up-now-it-moves-laterally-7530960abec5
+author: AgentShield
+date: "2026-03-30"
+modified: "2026-03-30"
+tags:
+  - attack.discovery
+  - attack.t1083
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_recursive_ls:
+    event_type: tool_call
+    command|contains:
+      - 'ls -laR'
+      - 'ls -alR'
+      - 'ls -Rla'
+      - 'ls -R /'
+      - 'find / '
+      - 'find /home'
+      - 'find /etc'
+      - 'find /var'
+  selection_cloud_enum:
+    event_type: tool_call
+    command|contains:
+      - 's3 ls --recursive'
+      - 's3 ls s3://'
+      - 'gcloud storage ls'
+      - 'az storage blob list'
+      - 'gsutil ls -r'
+  selection_agent_tools:
+    event_type: tool_call
+    command|contains:
+      - 'list_files'
+      - 'list_directory'
+  condition: selection_recursive_ls or selection_cloud_enum or selection_agent_tools
+falsepositives:
+  - Legitimate deployment scripts that audit directory structure for compliance or backup purposes
+  - Cloud cost-management tools enumerating S3/GCS buckets to identify unused resources
+  - Authorized penetration testing agents performing reconnaissance under explicit scope
+level: high
