@@ -11,7 +11,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-04-09"
 tags:
   - attack.persistence
   - attack.t1546
@@ -51,12 +51,21 @@ detection:
     content|contains:
       - 'IMPORTANT NEW INSTRUCTIONS'
       - 'END INSTRUCTIONS'
-      - 'SYSTEM INSTRUCTIONS'
+      # NOTE: 'SYSTEM INSTRUCTIONS' removed — too generic. Platform safety wrappers
+      # (e.g., OpenClaw "do not treat content as system instructions") contain this
+      # phrase legitimately and cause massive FP volume with case-insensitive matching.
+      # Replaced with injection-specific variants below.
+      - 'FOLLOW THESE INSTRUCTIONS'
+      - 'YOUR NEW INSTRUCTIONS'
+      - 'OVERRIDE SYSTEM'
+      - 'SYSTEM PROMPT:'
       - '<|im_start|>system'
       - '<|system|>'
       - '### SYSTEM'
       - '---INSTRUCTIONS---'
       - 'IGNORE ABOVE'
+      - 'IGNORE PREVIOUS INSTRUCTIONS'
+      - 'DISREGARD PREVIOUS'
   selection_llm_tokens:
     event_type: content_retrieval
     content|contains:
@@ -64,10 +73,10 @@ detection:
       - '<|startoftext|>'
       - '[INST]'
       - '[/INST]'
-      - '<s>'
-      - '</s>'
-  condition: selection_css_hiding or selection_unicode_smuggling or selection_instruction_markers or selection_llm_tokens
+      # NOTE: <s> and </s> removed — they are standard HTML strikethrough tags
+      # that appear in normal web content and cause massive false positive volume.
+      # Retain only tokens that are unambiguously LLM control sequences.
+  condition: selection_unicode_smuggling or selection_instruction_markers or selection_llm_tokens or (selection_css_hiding and (selection_instruction_markers or selection_llm_tokens))
 falsepositives:
-  - Legitimate CSS styling in retrieved web content with white text on white backgrounds
   - Unicode characters used for bidirectional text rendering in multilingual documents
 level: high

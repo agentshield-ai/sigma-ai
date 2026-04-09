@@ -10,7 +10,7 @@ references:
   - https://attack.mitre.org/techniques/T1082/
 author: AgentShield
 date: "2026-02-17"
-modified: "2026-03-02"
+modified: "2026-04-09"
 tags:
   - attack.credential-access
   - attack.t1552.001
@@ -43,12 +43,11 @@ detection:
       - 'grep API_KEY'
       - 'grep SECRET'
       - 'grep TOKEN'
-  # Full environment dump — bare commands or piped to anything
+  # Full environment dump — bare printenv (no args) or export -p
+  # Note: "printenv VAR_NAME" is a single-variable lookup (benign), excluded via filter.
   selection_full_env_dump:
     event_type: tool_call
-    command|contains:
-      - 'printenv'
-      - 'export -p'
+    command|re: '(^|\s|;|&&|\|)(printenv\s*$|printenv\s*\||export\s+-p)'
   selection_env_bare:
     event_type: tool_call
     command|re: '(^|\s|;|&&|\|)env(\s*$|\s*\||\s+[^=])'

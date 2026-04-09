@@ -16,7 +16,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-26"
-modified: "2026-02-26"
+modified: "2026-04-09"
 tags:
   - attack.execution
   - attack.t1059
@@ -87,8 +87,13 @@ detection:
     command|contains|all:
       - 'ruby'
       - 'TCPSocket'
-  condition: 1 of selection_*
+  # Exclude heredoc/redirect file creation — writing a .py file is not executing Python.
+  # Pattern: cat > file.py << 'EOF' ... EOF
+  filter_heredoc_file_creation:
+    command|re: '(cat|tee)\s+>?\s*\S+\s*<<'
+  condition: 1 of selection_* and not filter_heredoc_file_creation
 falsepositives:
   - Legitimate Python scripts using requests/urllib to call authorised internal APIs
   - Development workflows using subprocess to run build tools or linters
+  - Heredoc file creation (cat > script.py << 'EOF') that contains scripting imports
 level: high

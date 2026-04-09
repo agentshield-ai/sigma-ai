@@ -1,0 +1,25 @@
+title: Unusual Tool Call Velocity in Session
+id: a1b2c3d4-e5f6-7890-abcd-session-vel01
+status: stable
+description: >
+    Detects sessions with an unusually high number of tool calls (20+), which may
+    indicate automated probing or scripted attack sequences.
+references:
+    - https://attack.mitre.org/techniques/T1046/
+    - https://arxiv.org/abs/2403.04783
+author: AgentShield
+date: "2026-03-18"
+tags:
+    - attack.discovery
+    - attack.t1046
+logsource:
+    product: ai_agent
+    category: agent_events
+detection:
+    selection:
+        session.tool_count|re: '^([2-9][0-9]|[1-9][0-9]{2,})$'
+    condition: selection
+level: medium
+falsepositives:
+    - Legitimate batch operations
+    - Automated testing sessions

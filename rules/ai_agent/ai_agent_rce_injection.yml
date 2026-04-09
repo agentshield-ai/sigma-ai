@@ -14,7 +14,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-01-25"
-modified: "2026-02-24"
+modified: "2026-04-09"
 tags:
   - attack.execution
   - attack.t1059
@@ -53,16 +53,14 @@ detection:
     command|contains|all:
       - 'wget'
       - '| python'
+  # Tightened: bash -c + curl/wget must also pipe to shell, eval, or source.
+  # Plain "bash -c 'curl -o file URL'" (download-only) is not RCE.
   selection_bash_c_curl:
     event_type: tool_call
-    command|contains|all:
-      - 'bash -c'
-      - 'curl'
+    command|re: 'bash\s+-c\s+.*curl.*(\|\s*(bash|sh|python|perl)|eval\s|source\s|\$\()'
   selection_bash_c_wget:
     event_type: tool_call
-    command|contains|all:
-      - 'bash -c'
-      - 'wget'
+    command|re: 'bash\s+-c\s+.*wget.*(\|\s*(bash|sh|python|perl)|eval\s|source\s|\$\()'
   # Process substitution: bash <(curl ...) or sh <(curl ...)
   selection_procsub_curl:
     event_type: tool_call

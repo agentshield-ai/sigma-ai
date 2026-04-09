@@ -1,0 +1,33 @@
+title: Coordinated Tool Abuse Across Sessions
+id: f6c4d8e5-7a2b-8c3d-e5f6-coordin-ab01
+status: experimental
+description: |
+  Detects patterns where multiple sessions execute similar suspicious tool
+  sequences within a short time window, which may indicate a systemic attack
+  coordinating multiple AI agents. This addresses the "Systemic Traps"
+  category identified by Franklin et al. (2026), where adversarial content
+  can trigger synchronised actions across many agents simultaneously.
+references:
+  - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
+  - https://attack.mitre.org/techniques/T1072/
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+author: AgentShield
+date: "2026-04-06"
+tags:
+  - attack.execution
+  - attack.t1072
+  - attack.impact
+  - attack.t1499
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_high_global_alerts:
+    session.cross_session_alert_count|re: '^([1-9][0-9]+)$'
+  selection_tool_convergence:
+    session.cross_session_tool_overlap|re: '^0\.[8-9]|^1\.0'
+  condition: selection_high_global_alerts or selection_tool_convergence
+level: high
+falsepositives:
+  - CI/CD pipelines running identical builds across multiple sessions
+  - Automated testing frameworks with parallel sessions

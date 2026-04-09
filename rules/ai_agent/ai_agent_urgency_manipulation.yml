@@ -1,0 +1,69 @@
+title: Urgency and Pressure Manipulation in Agent Input
+id: c3f1a5b2-4d9e-5f0a-b2c3-urgency-mn01
+status: test
+description: |
+  Detects adversarial content that uses urgency, time pressure, or threat
+  language to rush AI agent decision-making and bypass careful evaluation.
+  These patterns exploit cognitive shortcuts analogous to social engineering
+  techniques described in the "Semantic Manipulation Traps" category by
+  Franklin et al. (2026).
+references:
+  - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
+  - https://attack.mitre.org/techniques/T1656/
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+author: AgentShield
+date: "2026-04-06"
+tags:
+  - attack.initial-access
+  - attack.t1566
+  - attack.defense-evasion
+  - attack.t1656
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_urgency_keywords:
+    event_type:
+      - user_input
+      - content_retrieval
+      - tool_response
+    message|contains:
+      - 'do this immediately without'
+      - 'critical deadline do not verify'
+      - 'time-sensitive override'
+      - 'emergency: skip all checks'
+      - 'urgent: bypass approval'
+      - 'no time to review just execute'
+      - 'skip validation this is urgent'
+      - 'execute now ask questions later'
+  selection_threat_language:
+    event_type:
+      - user_input
+      - content_retrieval
+      - tool_response
+    message|contains:
+      - 'system will crash if you do not'
+      - 'data loss imminent unless'
+      - 'security breach in progress run'
+      - 'production is down execute'
+      - 'failure to comply will result in'
+      - 'you will be shut down if'
+      - 'your access will be revoked unless'
+  selection_skip_safety:
+    event_type:
+      - user_input
+      - content_retrieval
+      - tool_response
+    message|contains:
+      - 'skip safety checks'
+      - 'bypass security for this one'
+      - 'disable verification temporarily'
+      - 'override safety protocols'
+      - 'ignore warnings and proceed'
+      - 'suppress all alerts and run'
+  condition: selection_urgency_keywords or selection_threat_language or selection_skip_safety
+falsepositives:
+  - Legitimate incident response instructions
+  - Production outage remediation scripts
+  - Time-critical but authorised deployment procedures
+level: high

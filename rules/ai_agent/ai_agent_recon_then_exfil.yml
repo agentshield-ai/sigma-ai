@@ -1,0 +1,27 @@
+title: Reconnaissance Tools Followed by Data Exfiltration
+id: a1b2c3d4-e5f6-7890-abcd-recon-exfil1
+status: stable
+description: >
+    Detects sessions where reconnaissance tools (ls, find, cat, head) were used
+    before data exfiltration tools (curl, wget, nc), suggesting a staged attack
+    where the agent probes with benign calls then chains into exfiltration.
+references:
+    - https://attack.mitre.org/techniques/T1041/
+    - https://arxiv.org/abs/2403.04783
+author: AgentShield
+date: "2026-03-18"
+tags:
+    - attack.exfiltration
+    - attack.t1041
+logsource:
+    product: ai_agent
+    category: agent_events
+detection:
+    selection_recon_history:
+        session.recent_tools|re: '.*(ls|find|cat|head|env).*'
+    selection_exfil_current:
+        tool|re: '.*(curl|wget|nc|netcat|scp|rsync).*'
+    condition: selection_recon_history and selection_exfil_current
+level: high
+falsepositives:
+    - Normal development workflows that browse then download
