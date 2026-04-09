@@ -1,0 +1,46 @@
+title: AI Agent Process Memory Read via /proc Filesystem
+id: bcc3f1fe-0c5f-53d3-b7a4-0639619810be
+status: test
+description: |
+  Detects AI agent tool calls that attempt to read process memory or environment
+  variables via Linux /proc pseudo-filesystem paths (/proc/*/mem, /proc/*/environ,
+  /proc/*/maps) or /dev/mem. This technique is used by supply-chain malware injected
+  into AI framework packages (e.g. LiteLLM 1.82.7/1.82.8) to extract secrets such
+  as AWS/GCP tokens and Kubernetes service account credentials from running processes.
+references:
+  - https://attack.mitre.org/techniques/T1005/
+  - https://www.kaspersky.com/blog/critical-supply-chain-attack-trivy-litellm-checkmarx-teampcp/55510/
+author: AgentShield
+date: "2026-03-30"
+modified: "2026-03-30"
+tags:
+  - attack.collection
+  - attack.t1005
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_proc_mem:
+    event_type: tool_call
+    command|contains:
+      - /proc/
+      - /dev/mem
+  selection_proc_mem_path:
+    event_type: tool_call
+    command|re: '/proc/[0-9]+/(mem|environ|maps|fd|cmdline)'
+  selection_devmem:
+    event_type: tool_call
+    command|contains: '/dev/mem'
+  selection_python_proc:
+    event_type: tool_call
+    command|contains:
+      - "open('/proc/"
+      - 'open("/proc/'
+      - "open(f'/proc/"
+      - 'open(f"/proc/'
+  condition: selection_proc_mem or selection_proc_mem_path or selection_devmem or selection_python_proc
+falsepositives:
+  - Legitimate system diagnostics scripts checking process CPU/memory usage via /proc/*/stat or /proc/*/status
+  - Container health-check scripts reading /proc/self/environ to inspect their own environment
+  - Performance monitoring agents reading /proc/*/maps for memory profiling
+level: critical
