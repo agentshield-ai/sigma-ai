@@ -1,0 +1,68 @@
+title: Inter-Agent Message Spoofing and Peer Impersonation
+id: 83e72875-7c6f-52cc-949c-505cbbb7649f
+status: experimental
+description: |
+  Detects messages between agents that claim a privileged peer identity
+  without a verifiable identity proof (mTLS, signed JWT, or mOIDC token),
+  or instruct another agent to take a destructive action based solely on
+  an unverified peer status report. Addresses OWASP ASI07 (Insecure
+  Inter-Agent Communication) and the multi-agent collusion patterns
+  documented by the Handala "Wiper" incident, where a compromised data
+  entry agent convinced a backup agent that the database was corrupted
+  and should be overwritten.
+references:
+  - https://arxiv.org/html/2505.02077v2
+  - https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+  - https://techbytes.app/posts/rogue-ai-agent-collusion-insider-security-risk/
+  - https://attack.mitre.org/techniques/T1036/
+  - https://attack.mitre.org/techniques/T1565/
+author: AgentShield
+date: "2026-05-21"
+tags:
+  - attack.defense-evasion
+  - attack.t1036
+  - attack.impact
+  - attack.t1565
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_unauthenticated_peer:
+    event_type: agent_message
+    message.peer_identity_verified: false
+    message.claimed_role|contains:
+      - 'orchestrator'
+      - 'supervisor'
+      - 'admin'
+      - 'root'
+      - 'planner'
+      - 'backup'
+      - 'security'
+  selection_destructive_directive:
+    event_type: agent_message
+    message.directive|contains:
+      - 'overwrite'
+      - 'delete'
+      - 'truncate'
+      - 'drop table'
+      - 'rm -rf'
+      - 'wipe'
+      - 'reset_state'
+      - 'rotate_keys'
+      - 'revoke_all'
+  selection_identity_mismatch:
+    event_type: agent_message
+    # Custom: AgentShield compares the claimed sender against the verified
+    # transport-layer identity (mTLS CN, signed JWT sub, mOIDC subject).
+    message.claimed_sender_id|exists: true
+    message.verified_sender_id|exists: true
+    message.identity_match: false
+  selection_unsigned_orchestration:
+    event_type: agent_handoff
+    handoff.signature_valid: false
+  condition: (selection_unauthenticated_peer and selection_destructive_directive) or selection_identity_mismatch or selection_unsigned_orchestration
+falsepositives:
+  - Single-process agent frameworks where peer identity is implicit (LangGraph, AutoGen local runs) — scope this rule to deployments using a multi-agent transport
+  - Test harnesses that simulate agent handoffs without signing
+  - Legacy orchestrators not yet upgraded to the agent-to-agent OAuth profile
+level: high

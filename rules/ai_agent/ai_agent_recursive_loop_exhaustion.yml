@@ -1,0 +1,44 @@
+title: Recursive Agent Loop and Token Budget Exhaustion
+id: 6991e62a-6efd-5f7d-b5ff-7e57ffa6158c
+status: experimental
+description: |
+  Detects agent sessions that exhibit recursive or non-converging behaviour:
+  the same tool invoked with identical arguments many times within a short
+  window, step count exceeding the agent's configured budget, or cumulative
+  token spend crossing a denial-of-wallet threshold without state change.
+  This addresses OWASP ASI10 (Recursive Resource Exhaustion / Agentic Loops)
+  and the runaway-cost incidents documented in 2026, where unbounded agent
+  loops produced four-figure API bills in hours.
+references:
+  - https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+  - https://www.toxsec.com/p/denial-of-wallet
+  - https://instatunnel.my/blog/agentic-resource-exhaustion-the-infinite-loop-attack-of-the-ai-era
+  - https://attack.mitre.org/techniques/T1499/
+author: AgentShield
+date: "2026-05-21"
+tags:
+  - attack.impact
+  - attack.t1499
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_repeat_tool_call:
+    event_type: tool_call
+    # Custom: AgentShield tracks how many times this (tool_name, args_hash) tuple
+    # has been issued in the current session.
+    session.identical_tool_call_count|re: '^([2-9][0-9]|[1-9][0-9]{2,})$'
+  selection_step_budget_breach:
+    session.step_count|re: '^([5-9][0-9]|[1-9][0-9]{2,})$'
+    session.goal_state_changed: false
+  selection_token_budget_breach:
+    session.cumulative_tokens|re: '^([5-9][0-9]{5}|[1-9][0-9]{6,})$'
+  selection_self_prompt_recursion:
+    event_type: model_call
+    session.self_prompt_depth|re: '^([5-9]|[1-9][0-9]+)$'
+  condition: 1 of selection_*
+falsepositives:
+  - Long-running batch agents with an explicit, approved high token budget
+  - Iterative refinement workflows (e.g. code review loops) where step_count is high but goal_state_changed flips on each iteration
+  - Load tests and benchmark runs
+level: high
