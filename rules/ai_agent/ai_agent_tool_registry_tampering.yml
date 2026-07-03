@@ -33,16 +33,16 @@ detection:
       - 'mcp_tool_register'
   selection_instruction_in_description:
     arguments|re: '(?i)"description"\s*:\s*"[^"]*\b(always\s+include|first\s+call|send\s+(output|results|data)\s+to\s+https?://|call\s+this\s+(before|after)|do\s+not\s+log|ignore\s+the\s+above)[^"]*"'
-  selection_description_patch:
-    arguments|contains: '"description"'
-  selection_version_bump:
-    arguments|contains:
-      - '"version"'
-      - '"schema_version"'
+  selection_description_update:
     command|contains:
       - 'update_tool'
       - 'patch_tool_schema'
-  condition: selection_schema_write and (selection_instruction_in_description or (selection_description_patch and not selection_version_bump))
+    arguments|re: '(?i)"description"\s*:'
+  filter_version_bump:
+    arguments|contains:
+      - '"version"'
+      - '"schema_version"'
+  condition: selection_schema_write and (selection_instruction_in_description or (selection_description_update and not filter_version_bump))
 falsepositives:
   - Internal developer tooling that writes conversational examples or usage
     notes inline within description fields during legitimate development

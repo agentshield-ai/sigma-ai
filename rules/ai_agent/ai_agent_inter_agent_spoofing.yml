@@ -55,8 +55,10 @@ detection:
     event_type: agent_message
     # Custom: AgentShield compares the claimed sender against the verified
     # transport-layer identity (mTLS CN, signed JWT sub, mOIDC subject).
-    message.claimed_sender_id|exists: true
-    message.verified_sender_id|exists: true
+    # '*' asserts the field is present (any value); the engine's Sigma fork
+    # does not support the |exists modifier.
+    message.claimed_sender_id: '*'
+    message.verified_sender_id: '*'
     message.identity_match: false
   selection_unsigned_orchestration:
     event_type: agent_handoff

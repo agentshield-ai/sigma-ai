@@ -42,15 +42,18 @@ detection:
       - '"proxy"'
       - 'HTTPS_PROXY='
       - 'HTTP_PROXY='
-  selection_non_canonical_host:
-    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://(?!(api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|api\.mistral\.ai|api\.cohere\.com|api\.x\.ai)(/|"|$))'
+  selection_base_url_override:
+    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://'
+  filter_canonical_base_url:
+    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://(api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|api\.mistral\.ai|api\.cohere\.com|api\.x\.ai)(/|"|$)'
   selection_auth_header_to_external:
     event_type: outbound_request
     request.headers|contains:
       - 'Authorization: Bearer sk-'
       - 'x-api-key:'
-    destination.host|re: '^(?!.*\.(anthropic|openai|googleapis|mistral|cohere|x\.ai)\.com).*$'
-  condition: (selection_endpoint_override and selection_non_canonical_host) or selection_auth_header_to_external
+  filter_canonical_destination:
+    destination.host|re: '\.(anthropic|openai|googleapis|mistral|cohere|x\.ai)\.com'
+  condition: (selection_endpoint_override and selection_base_url_override and not filter_canonical_base_url) or (selection_auth_header_to_external and not filter_canonical_destination)
 falsepositives:
   - Approved enterprise LLM proxies (Portkey, LiteLLM gateway, Cloudflare AI Gateway) on internal hosts — allowlist via destination.host
   - Self-hosted model deployments where the base URL legitimately points to an internal endpoint
