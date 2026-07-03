@@ -1,0 +1,58 @@
+title: Agent API Endpoint or Auth Header Redirection
+id: 9e338173-4519-5c00-9fb6-d72b3cb0fd6f
+status: experimental
+description: |
+  Detects agent runtime configuration that redirects model API traffic
+  (base URL, proxy, or Authorization header destination) to a host that
+  is not the canonical model provider endpoint. CVE-2026-21852 in Claude
+  Code allowed a repository-controlled setting to redirect API traffic —
+  including the full Authorization header — to an attacker-controlled
+  server before the user accepted the trust dialog. The same pattern
+  has been observed in LiteLLM proxy hijacks and malicious MCP server
+  configurations that wrap the model endpoint.
+references:
+  - https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/
+  - https://nvd.nist.gov/vuln/detail/CVE-2026-21852
+  - https://attack.mitre.org/techniques/T1556/
+  - https://attack.mitre.org/techniques/T1090/
+author: AgentShield
+date: "2026-05-21"
+tags:
+  - attack.credential-access
+  - attack.t1556
+  - attack.command-and-control
+  - attack.t1090
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_endpoint_override:
+    event_type:
+      - config_load
+      - env_set
+      - file_write
+    content|contains:
+      - 'ANTHROPIC_BASE_URL='
+      - 'ANTHROPIC_API_URL='
+      - 'OPENAI_BASE_URL='
+      - 'OPENAI_API_BASE='
+      - '"baseURL"'
+      - '"base_url"'
+      - '"apiBase"'
+      - '"proxy"'
+      - 'HTTPS_PROXY='
+      - 'HTTP_PROXY='
+  selection_non_canonical_host:
+    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://(?!(api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|api\.mistral\.ai|api\.cohere\.com|api\.x\.ai)(/|"|$))'
+  selection_auth_header_to_external:
+    event_type: outbound_request
+    request.headers|contains:
+      - 'Authorization: Bearer sk-'
+      - 'x-api-key:'
+    destination.host|re: '^(?!.*\.(anthropic|openai|googleapis|mistral|cohere|x\.ai)\.com).*$'
+  condition: (selection_endpoint_override and selection_non_canonical_host) or selection_auth_header_to_external
+falsepositives:
+  - Approved enterprise LLM proxies (Portkey, LiteLLM gateway, Cloudflare AI Gateway) on internal hosts — allowlist via destination.host
+  - Self-hosted model deployments where the base URL legitimately points to an internal endpoint
+  - Local development against a mock server on localhost
+level: critical
