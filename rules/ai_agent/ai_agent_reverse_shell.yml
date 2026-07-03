@@ -1,5 +1,7 @@
 title: Reverse Shell Attempt
 id: 74dee137-ffb8-54c8-862f-4a98a61f63ee
+aliases:
+  - agent-reverse-shell-001
 status: stable
 description: |
   Detects commands that establish reverse shells, allowing an attacker
@@ -11,7 +13,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-17"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.execution
   - attack.t1059

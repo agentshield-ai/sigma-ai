@@ -1,5 +1,7 @@
 title: Persistence Mechanism Installation
 id: d12c1b8c-4ee7-5548-947b-a1627bdc98dc
+aliases:
+  - agent-user-account-creation-001
 related:
   - id: 1e785c77-6d77-5c79-ae24-6a389f9ef7f1
     type: similar
@@ -15,7 +17,7 @@ references:
   - https://attack.mitre.org/techniques/T1546/
 author: AgentShield
 date: "2026-01-25"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1053
@@ -83,7 +85,10 @@ detection:
   selection_rclocal_write:
     event_type: file_write
     file_path|endswith: '/etc/rc.local'
-  condition: selection_crontab_edit or selection_cron_write or selection_cron_d_write or selection_launchagent_write or selection_launchdaemon_write or selection_launchctl or selection_launchctl_bootstrap or selection_systemd_write or selection_systemd_user_write or selection_systemctl_enable or selection_bashrc_write or selection_zshrc_write or selection_initd_write or selection_rclocal_write
+  selection_user_account_creation:
+    event_type: tool_call
+    command|re: '\b(useradd|adduser)\b'
+  condition: selection_crontab_edit or selection_cron_write or selection_cron_d_write or selection_launchagent_write or selection_launchdaemon_write or selection_launchctl or selection_launchctl_bootstrap or selection_systemd_write or selection_systemd_user_write or selection_systemctl_enable or selection_bashrc_write or selection_zshrc_write or selection_initd_write or selection_rclocal_write or selection_user_account_creation
 falsepositives:
   - Legitimate cron job setup for scheduled tasks
   - System administrators configuring launch agents for authorised services

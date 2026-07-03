@@ -1,5 +1,7 @@
 title: Shell Configuration Modification
 id: 1e785c77-6d77-5c79-ae24-6a389f9ef7f1
+aliases:
+  - agent-ssh-key-exfil-001
 related:
   - id: d12c1b8c-4ee7-5548-947b-a1627bdc98dc
     type: similar
@@ -12,7 +14,7 @@ references:
   - https://attack.mitre.org/techniques/T1546/
 author: AgentShield
 date: "2026-02-04"
-modified: "2026-03-02"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1546

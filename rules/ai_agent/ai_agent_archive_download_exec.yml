@@ -1,5 +1,7 @@
 title: Archive Download and Execution via Shell Chaining
 id: b3501634-d992-5452-a4b5-163f1502c151
+aliases:
+  - agent-archive-download-exec-001
 status: stable
 description: |
   Detects command patterns where a remote archive is downloaded (curl/wget),
@@ -12,7 +14,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-22"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.execution
   - attack.t1059

@@ -1,5 +1,7 @@
 title: Urgency and Pressure Manipulation in Agent Input
-id: c3f1a5b2-4d9e-5f0a-b2c3-urgency-mn01
+id: 63cb1a2f-a7e0-5d3d-9b0e-795d70849fbc
+aliases:
+  - agent-urgency-manipulation-001
 status: test
 description: |
   Detects adversarial content that uses urgency, time pressure, or threat
@@ -9,15 +11,16 @@ description: |
   Franklin et al. (2026).
 references:
   - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
-  - https://attack.mitre.org/techniques/T1656/
+  - https://attack.mitre.org/techniques/T1684/001/
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
 author: AgentShield
 date: "2026-04-06"
+modified: "2026-07-03"
 tags:
   - attack.initial-access
   - attack.t1566
-  - attack.defense-evasion
-  - attack.t1656
+  - attack.stealth
+  - attack.t1684.001
 logsource:
   product: ai_agent
   category: agent_events

@@ -84,10 +84,11 @@ Rules are organised by product (`ai_agent`) following [SigmaHQ](https://github.c
 git clone https://github.com/agentshield-ai/sigma-ai.git
 
 # Use with AgentShield engine
-agentshield serve -rules ./sigma-ai/rules -port 8432
+export AGENTSHIELD_AUTH_TOKEN="replace-with-at-least-32-characters"
+agentshield serve --rules ./sigma-ai/rules --port 8433
 
 # Validate rules
-agentshield rules validate -path ./sigma-ai/rules
+agentshield rules validate --path ./sigma-ai/rules
 ```
 
 ### With General Sigma Tooling

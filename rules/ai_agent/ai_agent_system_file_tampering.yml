@@ -10,7 +10,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-04"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1543
@@ -23,12 +23,15 @@ detection:
     command|contains:
       - '> /etc/'
       - 'tee /etc/'
-  selection_bin_write:
+  selection_bin_redirect:
     event_type: tool_call
     command|contains:
       - '> /usr/bin/'
       - '> /usr/local/bin/'
-      - 'cp '
+  selection_bin_copy:
+    event_type: tool_call
+    command|contains: 'cp '
+  selection_bin_path:
     command|contains:
       - '/usr/bin/'
       - '/usr/local/bin/'
@@ -40,7 +43,7 @@ detection:
     file_path|startswith:
       - '/usr/bin/'
       - '/usr/local/bin/'
-  condition: selection_etc_write or selection_bin_write or selection_write_tool_etc or selection_write_tool_bin
+  condition: selection_etc_write or selection_bin_redirect or (selection_bin_copy and selection_bin_path) or selection_write_tool_etc or selection_write_tool_bin
 falsepositives:
   - Package managers writing to /etc/ or /usr/local/bin/ during legitimate installation
   - System configuration management tools (e.g. Ansible, Chef) updating /etc/ files

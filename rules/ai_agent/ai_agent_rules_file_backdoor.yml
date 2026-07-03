@@ -12,11 +12,11 @@ references:
   - https://embracethered.com/blog/posts/2024/claude-computer-use-c2-the-spaiware/
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1564
 logsource:
   product: ai_agent
@@ -35,19 +35,19 @@ detection:
   selection_bidi_unicode:
     event_type: file_write
     content|contains:
-      - '\u202a'  # LEFT-TO-RIGHT EMBEDDING
-      - '\u202b'  # RIGHT-TO-LEFT EMBEDDING
-      - '\u202c'  # POP DIRECTIONAL FORMATTING
-      - '\u202d'  # LEFT-TO-RIGHT OVERRIDE
-      - '\u202e'  # RIGHT-TO-LEFT OVERRIDE
+      - "\u202a"  # LEFT-TO-RIGHT EMBEDDING
+      - "\u202b"  # RIGHT-TO-LEFT EMBEDDING
+      - "\u202c"  # POP DIRECTIONAL FORMATTING
+      - "\u202d"  # LEFT-TO-RIGHT OVERRIDE
+      - "\u202e"  # RIGHT-TO-LEFT OVERRIDE
   selection_zero_width:
     event_type: file_write
     content|contains:
-      - '\u200d'  # ZERO WIDTH JOINER
-      - '\ufeff'  # BYTE ORDER MARK
-      - '\u200b'  # ZERO WIDTH SPACE
-      - '\u200c'  # ZERO WIDTH NON-JOINER
-      - '\u2060'  # WORD JOINER
+      - "\u200d"  # ZERO WIDTH JOINER
+      - "\ufeff"  # BYTE ORDER MARK
+      - "\u200b"  # ZERO WIDTH SPACE
+      - "\u200c"  # ZERO WIDTH NON-JOINER
+      - "\u2060"  # WORD JOINER
   selection_suspicious_byte_ratio:
     event_type: file_write
     # Custom: requires AgentShield byte-level analysis engine

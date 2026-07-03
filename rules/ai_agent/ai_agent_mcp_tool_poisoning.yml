@@ -13,11 +13,11 @@ references:
   - https://blog.trailofbits.com/2025/01/09/the-risks-of-mcp-and-ai-tool-ecosystems/
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1027
 logsource:
   product: ai_agent
@@ -47,6 +47,9 @@ detection:
       - '\033['
       - '\u001b['
       - '\e['
+  selection_ansi_escape_raw:
+    event_type: tool_description
+    description|re: '\x1b\['
   selection_response_ansi:
     event_type: tool_response
     response|contains:
@@ -54,6 +57,9 @@ detection:
       - '\033['
       - '\u001b['
       - '\e['
+  selection_response_ansi_raw:
+    event_type: tool_response
+    response|re: '\x1b\['
   selection_hidden_instructions:
     event_type: tool_description
     description|contains:
@@ -61,7 +67,7 @@ detection:
       - 'display: none'
       - 'visibility: hidden'
       - 'font-size: 0'
-  condition: selection_system_instructions or selection_long_imperative or selection_ansi_escape or selection_response_ansi or selection_hidden_instructions
+  condition: selection_system_instructions or selection_long_imperative or selection_ansi_escape or selection_ansi_escape_raw or selection_response_ansi or selection_response_ansi_raw or selection_hidden_instructions
 falsepositives:
   - Legitimate tool descriptions with capitalised keywords for emphasis in documentation
   - Terminal-based tools that include ANSI colour codes in their help text

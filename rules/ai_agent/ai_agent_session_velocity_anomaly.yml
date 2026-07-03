@@ -1,5 +1,5 @@
 title: Unusual Tool Call Velocity in Session
-id: a1b2c3d4-e5f6-7890-abcd-session-vel01
+id: d2c6956f-7960-5f83-9886-15cab99fcaab
 status: stable
 description: >
     Detects sessions with an unusually high number of tool calls (20+), which may
@@ -9,6 +9,7 @@ references:
     - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-03-18"
+modified: "2026-07-03"
 tags:
     - attack.discovery
     - attack.t1046

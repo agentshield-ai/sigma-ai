@@ -1,5 +1,7 @@
 title: Indirect Prompt Injection in Retrieved Content
 id: 24bc5b40-f601-5055-aa6d-0252c7a23a36
+aliases:
+  - agent-prompt-injection-indirect-001
 status: stable
 description: |
   Detects indirect prompt injection markers in content retrieved by AI agents
@@ -11,11 +13,11 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-04-09"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1546
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1564
 logsource:
   product: ai_agent
@@ -36,16 +38,16 @@ detection:
   selection_unicode_smuggling:
     event_type: content_retrieval
     content|contains:
-      - '\ue0000'
-      - '\ue007f'
-      - '\u202a'
-      - '\u202b'
-      - '\u202c'
-      - '\u202d'
-      - '\u202e'
-      - '\u200d'
-      - '\ufeff'
-      - '\u200b'
+      - "\U000E0000"
+      - "\U000E007F"
+      - "\u202a"
+      - "\u202b"
+      - "\u202c"
+      - "\u202d"
+      - "\u202e"
+      - "\u200d"
+      - "\ufeff"
+      - "\u200b"
   selection_instruction_markers:
     event_type: content_retrieval
     content|contains:

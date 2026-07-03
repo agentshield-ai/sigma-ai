@@ -11,7 +11,7 @@ references:
   - https://embracethered.com/blog/posts/2024/claude-computer-use-c2-the-spaiware/
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1546
@@ -59,10 +59,10 @@ detection:
     source: openclaw
     event_type: file_write
     content|contains:
-      - '\u200b'
-      - '\ufeff'
-      - '\u202a'
-      - '\u202e'
+      - "\u200b"
+      - "\ufeff"
+      - "\u202a"
+      - "\u202e"
       - 'color: white'
       - 'display: none'
   selection_bootstrap_modification:

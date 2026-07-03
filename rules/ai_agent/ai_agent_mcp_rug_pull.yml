@@ -13,9 +13,9 @@ references:
   - https://blog.trailofbits.com/2025/01/09/the-risks-of-mcp-and-ai-tool-ecosystems/
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1036
   - attack.persistence
   - attack.t1546

@@ -12,11 +12,11 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-07"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.execution
   - attack.t1059
-  - attack.defense-evasion
+  - attack.stealth
 logsource:
   product: ai_agent
   category: agent_events

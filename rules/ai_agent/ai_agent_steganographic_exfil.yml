@@ -11,11 +11,11 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.exfiltration
   - attack.t1048
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1027
 logsource:
   product: ai_agent
@@ -66,12 +66,13 @@ detection:
       - 'mp3stego'
       - 'deepsteg'
       - 'stegpy'
-  selection_file_carving:
+  selection_file_carving_tools:
     event_type: tool_call
     command|contains:
       - 'binwalk'
       - 'foremost'
       - 'scalpel'
+  selection_file_carving_extract:
     command|contains: '-e'
   selection_suspicious_image_operations:
     event_type: file_write
@@ -83,7 +84,7 @@ detection:
       - '.bmp'
     # Custom: requires AgentShield file size tracking
     size_increase_ratio: '>1.5'
-  condition: selection_steganography_tools or selection_steghide_embed or selection_exiftool_manipulation or selection_python_lsb or selection_python_stego_patterns or selection_audio_stego or selection_file_carving or selection_suspicious_image_operations
+  condition: selection_steganography_tools or selection_steghide_embed or selection_exiftool_manipulation or selection_python_lsb or selection_python_stego_patterns or selection_audio_stego or (selection_file_carving_tools and selection_file_carving_extract) or selection_suspicious_image_operations
 falsepositives:
   - Digital forensics investigators using steganography detection tools
   - Image processing pipelines that legitimately modify pixel data or metadata

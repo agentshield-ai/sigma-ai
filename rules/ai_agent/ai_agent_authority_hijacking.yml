@@ -1,5 +1,7 @@
 title: Authority Hijacking and Social Engineering in Agent Input
-id: b7e2f4a1-3c8d-5e9f-a1b2-authority-hj01
+id: 325e6012-52d6-5504-983a-80856b12c609
+aliases:
+  - agent-authority-hijacking-001
 status: test
 description: |
   Detects semantic manipulation attempts where adversarial content impersonates
@@ -9,15 +11,16 @@ description: |
   et al. (2026).
 references:
   - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438
-  - https://attack.mitre.org/techniques/T1656/
+  - https://attack.mitre.org/techniques/T1684/001/
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
 author: AgentShield
 date: "2026-04-06"
+modified: "2026-07-03"
 tags:
   - attack.initial-access
   - attack.t1566
-  - attack.defense-evasion
-  - attack.t1656
+  - attack.stealth
+  - attack.t1684.001
 logsource:
   product: ai_agent
   category: agent_events

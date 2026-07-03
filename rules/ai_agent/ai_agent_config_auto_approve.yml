@@ -11,11 +11,11 @@ references:
   - https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.privilege-escalation
   - attack.t1548
-  - attack.defense-evasion
+  - attack.defense-impairment
   - attack.t1112
 logsource:
   product: ai_agent

@@ -8,16 +8,16 @@ description: |
 references:
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
   - https://attack.mitre.org/techniques/T1566/
-  - https://attack.mitre.org/techniques/T1562/
+  - https://attack.mitre.org/techniques/T1685/
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.initial-access
   - attack.t1566
-  - attack.defense-evasion
-  - attack.t1562
+  - attack.defense-impairment
+  - attack.t1685
 logsource:
   product: ai_agent
   category: agent_events
@@ -65,10 +65,10 @@ detection:
     source: openclaw
     event_type: tool_response
     response|contains:
-      - '\u202a'
-      - '\u202e'
-      - '\u200b'
-      - '\ufeff'
+      - "\u202a"
+      - "\u202e"
+      - "\u200b"
+      - "\ufeff"
   selection_hidden_instructions_css:
     source: openclaw
     event_type: tool_response

@@ -12,11 +12,11 @@ references:
   - https://blog.trailofbits.com/2025/01/09/the-risks-of-mcp-and-ai-tool-ecosystems/
 author: AgentShield
 date: "2026-02-16"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
   - attack.persistence
   - attack.t1547
-  - attack.defense-evasion
+  - attack.defense-impairment
   - attack.t1112
 logsource:
   product: ai_agent

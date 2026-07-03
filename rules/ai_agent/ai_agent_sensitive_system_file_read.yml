@@ -1,0 +1,42 @@
+title: Sensitive System File Read
+id: cb33c5f1-4bd1-5d36-a9b7-3e56737f928b
+aliases:
+  - agent-sensitive-system-files-001
+status: stable
+description: |
+  Detects reads of sensitive operating-system account, privilege, and
+  authentication files. These files are commonly used for local user
+  enumeration, credential discovery, or persistence setup by compromised
+  agents.
+references:
+  - https://attack.mitre.org/techniques/T1087/
+  - https://attack.mitre.org/techniques/T1552/
+author: AgentShield
+date: "2026-04-28"
+modified: "2026-04-28"
+tags:
+  - attack.discovery
+  - attack.t1087
+  - attack.credential-access
+  - attack.t1552
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection_exec_sensitive_unix:
+    event_type: tool_call
+    command|re: '\b(cat|less|more|head|tail|grep|awk|sed|strings)\s+/(etc/(passwd|shadow|sudoers|group|gshadow)|var/log/auth\.log|root/\.ssh/authorized_keys)\b'
+  selection_file_read_sensitive_unix:
+    event_type: file_read
+    file_path|contains:
+      - '/etc/passwd'
+      - '/etc/shadow'
+      - '/etc/sudoers'
+      - '/etc/gshadow'
+      - '/var/log/auth.log'
+      - '/root/.ssh/authorized_keys'
+  condition: selection_exec_sensitive_unix or selection_file_read_sensitive_unix
+falsepositives:
+  - System inventory tooling run by administrators
+  - Compliance scripts that intentionally inspect local account metadata
+level: high

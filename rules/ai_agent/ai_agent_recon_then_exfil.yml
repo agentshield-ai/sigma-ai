@@ -1,5 +1,5 @@
 title: Reconnaissance Tools Followed by Data Exfiltration
-id: a1b2c3d4-e5f6-7890-abcd-recon-exfil1
+id: 6222d663-59cc-549d-b0f5-34a787eb76aa
 status: stable
 description: >
     Detects sessions where reconnaissance tools (ls, find, cat, head) were used
@@ -10,6 +10,7 @@ references:
     - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-03-18"
+modified: "2026-07-03"
 tags:
     - attack.exfiltration
     - attack.t1041

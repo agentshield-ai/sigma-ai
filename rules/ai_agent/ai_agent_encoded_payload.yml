@@ -1,5 +1,8 @@
 title: Encoded or Obfuscated Command Execution
 id: a935a04a-61b2-5b55-a608-407a2048949a
+aliases:
+  - agent-encoded-payload-001
+  - agent-powershell-encoded-001
 status: stable
 description: |
   Detects base64-encoded payloads piped to shell execution, obfuscated
@@ -10,9 +13,9 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-04"
-modified: "2026-02-24"
+modified: "2026-07-03"
 tags:
-  - attack.defense-evasion
+  - attack.stealth
   - attack.t1027
 logsource:
   product: ai_agent
@@ -31,7 +34,10 @@ detection:
     command|contains:
       - 'eval $(echo'
       - 'eval "$(echo'
-  condition: selection_base64_pipe or selection_python_exec or selection_eval_echo
+  selection_powershell_encoded:
+    event_type: tool_call
+    command|re: '(?i)\b(powershell|powershell\.exe|pwsh)\b.*\s-(enc|encoded|encodedcommand)\b'
+  condition: selection_base64_pipe or selection_python_exec or selection_eval_echo or selection_powershell_encoded
 falsepositives:
   - Legitimate build scripts using base64 encoding for binary data
   - Development toolchains that compile and execute code snippets
