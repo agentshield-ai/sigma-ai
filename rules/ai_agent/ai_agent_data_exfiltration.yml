@@ -22,16 +22,19 @@ detection:
   # curl POST/PUT with flags potentially interleaved (e.g. curl -sS -X POST)
   selection_curl_post:
     event_type: tool_call
+    # NOTE: curl flag letters are case-significant (-d != -D, -F != -f, -T != -t),
+    # so only the binary name and the POST method / file value are case-folded via
+    # inline (?i:...) groups; the flags stay literal.
     command|re:
-      - 'curl\b.*\s-X\s+POST\b'
-      - 'curl\b.*\s--data\b'
-      - 'curl\b.*\s-d\s+@'
-      - 'curl\b.*\s-F\s+file=@'
+      - '(?i:curl)\b.*\s-X\s+(?i:POST)\b'
+      - '(?i:curl)\b.*\s--data\b'
+      - '(?i:curl)\b.*\s-d\s+@'
+      - '(?i:curl)\b.*\s-F\s+(?i:file)=@'
   selection_curl_upload:
     event_type: tool_call
     command|re:
-      - 'curl\b.*\s-T\s'
-      - 'curl\b.*\s--upload-file\b'
+      - '(?i:curl)\b.*\s-T\s'
+      - '(?i:curl)\b.*\s--upload-file\b'
   selection_wget_post:
     event_type: tool_call
     command|contains:
@@ -40,7 +43,7 @@ detection:
   # Piped data to netcat (common exfil channel)
   selection_nc_pipe:
     event_type: tool_call
-    command|re: '\|\s*(nc|ncat)\s'
+    command|re: '(?i)\|\s*(nc|ncat)\s'
   condition: selection_curl_post or selection_curl_upload or selection_wget_post or selection_nc_pipe
 falsepositives:
   - Legitimate API integrations that POST data to authorised external services

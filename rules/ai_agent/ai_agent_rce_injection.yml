@@ -59,17 +59,17 @@ detection:
   # Plain "bash -c 'curl -o file URL'" (download-only) is not RCE.
   selection_bash_c_curl:
     event_type: tool_call
-    command|re: 'bash\s+-c\s+.*(curl.*(\|\s*(bash|sh|python|perl))|(eval|source|\$\().*curl|curl.*(eval|source|\$\())'
+    command|re: '(?i)bash\s+-c\s+.*(curl.*(\|\s*(bash|sh|python|perl))|(eval|source|\$\().*curl|curl.*(eval|source|\$\())'
   selection_bash_c_wget:
     event_type: tool_call
-    command|re: 'bash\s+-c\s+.*(wget.*(\|\s*(bash|sh|python|perl))|(eval|source|\$\().*wget|wget.*(eval|source|\$\())'
+    command|re: '(?i)bash\s+-c\s+.*(wget.*(\|\s*(bash|sh|python|perl))|(eval|source|\$\().*wget|wget.*(eval|source|\$\())'
   # Process substitution: bash <(curl ...) or sh <(curl ...)
   selection_procsub_curl:
     event_type: tool_call
-    command|re: '(bash|sh)\s+<\(curl'
+    command|re: '(?i)(bash|sh)\s+<\(curl'
   selection_procsub_wget:
     event_type: tool_call
-    command|re: '(bash|sh)\s+<\(wget'
+    command|re: '(?i)(bash|sh)\s+<\(wget'
   condition: selection_curl_bash or selection_curl_sh or selection_wget_bash or selection_wget_sh or selection_curl_python or selection_wget_python or selection_bash_c_curl or selection_bash_c_wget or selection_procsub_curl or selection_procsub_wget
 falsepositives:
   - Legitimate installer scripts from trusted vendors (e.g. Homebrew, Rust) that use pipe-to-shell patterns

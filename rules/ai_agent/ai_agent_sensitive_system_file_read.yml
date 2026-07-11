@@ -25,7 +25,7 @@ logsource:
 detection:
   selection_exec_sensitive_unix:
     event_type: tool_call
-    command|re: '\b(cat|less|more|head|tail|grep|awk|sed|strings)\s+/(etc/(passwd|shadow|sudoers|group|gshadow)|var/log/auth\.log|root/\.ssh/authorized_keys)\b'
+    command|re: '(?i)\b(cat|less|more|head|tail|grep|awk|sed|strings)\s+/(etc/(passwd|shadow|sudoers|group|gshadow)|var/log/auth\.log|root/\.ssh/authorized_keys)\b'
   selection_file_read_sensitive_unix:
     event_type: file_read
     file_path|contains:

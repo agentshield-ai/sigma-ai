@@ -31,15 +31,18 @@ detection:
     command|contains:
       - 'eval "$'
       - 'eval "${'
+  # Backtick command substitution used for obfuscation. Gated on a fetch/decode/
+  # exec primitive inside the backticks so benign captures (`date`, `pwd`, `ls`)
+  # do not fire — plain backtick substitution is far too common to alert on alone.
   selection_backtick_exec:
     event_type: tool_call
-    command|re: '`[^`]+`'
+    command|re: '(?i)`[^`]*(base64|xxd|eval|curl|wget|nc|/dev/tcp)[^`]*`'
   selection_printf_hex_sh:
     event_type: tool_call
-    command|re: 'printf\s+.*\\x.*\|\s*(sh|bash)'
+    command|re: '(?i)printf\s+.*\\x.*\|\s*(sh|bash)'
   selection_printf_octal_sh:
     event_type: tool_call
-    command|re: 'printf\s+.*\\0.*\|\s*(sh|bash)'
+    command|re: '(?i)printf\s+.*\\0.*\|\s*(sh|bash)'
   selection_nested_subshell:
     event_type: tool_call
     command|contains:
@@ -51,7 +54,7 @@ detection:
       - '${cmd'
   selection_hex_echo_sh:
     event_type: tool_call
-    command|re: 'echo\s+-e\s+.*\\x.*\|\s*(sh|bash)'
+    command|re: '(?i)echo\s+-e\s+.*\\x.*\|\s*(sh|bash)'
   condition: 1 of selection_*
 falsepositives:
   - Shell scripts that use backtick substitution for command output capture in legacy code

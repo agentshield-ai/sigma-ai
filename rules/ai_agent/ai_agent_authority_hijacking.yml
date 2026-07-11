@@ -20,7 +20,7 @@ tags:
   - attack.initial-access
   - attack.t1566
   - attack.stealth
-  - attack.t1684.001
+  - attack.t1656
 logsource:
   product: ai_agent
   category: agent_events

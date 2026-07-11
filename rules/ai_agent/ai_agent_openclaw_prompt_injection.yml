@@ -17,7 +17,6 @@ tags:
   - attack.initial-access
   - attack.t1566
   - attack.defense-impairment
-  - attack.t1685
 logsource:
   product: ai_agent
   category: agent_events

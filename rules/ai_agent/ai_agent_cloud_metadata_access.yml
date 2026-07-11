@@ -61,7 +61,13 @@ detection:
       - 'curl'
       - '169.254.169.254'
       - 'meta-data'
-  condition: selection_aws_metadata or selection_aws_metadata_curl or selection_gcp_metadata or selection_gcp_metadata_curl or selection_ecs_metadata or selection_ecs_metadata_curl or selection_credential_paths or selection_imdsv1_requests
+  # Alternate IP encodings for the IMDS address 169.254.169.254 (a classic SSRF
+  # filter bypass): decimal (2852039166), hex (0xa9fea9fe), dotted-octal, and the
+  # IPv6 IMDS endpoint fd00:ec2::254. The literal-dotted forms are covered above.
+  selection_imds_encoded:
+    event_type: tool_call
+    command|re: '(?i)\b(curl|wget)\b.*(2852039166|0xa9fea9fe|0251\.0376\.0251\.0376|\[?fd00:ec2::254\]?)'
+  condition: selection_aws_metadata or selection_aws_metadata_curl or selection_gcp_metadata or selection_gcp_metadata_curl or selection_ecs_metadata or selection_ecs_metadata_curl or selection_credential_paths or selection_imdsv1_requests or selection_imds_encoded
 falsepositives:
   - Legitimate cloud instance management scripts
   - Infrastructure automation tools

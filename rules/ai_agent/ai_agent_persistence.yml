@@ -87,7 +87,7 @@ detection:
     file_path|endswith: '/etc/rc.local'
   selection_user_account_creation:
     event_type: tool_call
-    command|re: '\b(useradd|adduser)\b'
+    command|re: '(?i)\b(useradd|adduser)\b'
   condition: selection_crontab_edit or selection_cron_write or selection_cron_d_write or selection_launchagent_write or selection_launchdaemon_write or selection_launchctl or selection_launchctl_bootstrap or selection_systemd_write or selection_systemd_user_write or selection_systemctl_enable or selection_bashrc_write or selection_zshrc_write or selection_initd_write or selection_rclocal_write or selection_user_account_creation
 falsepositives:
   - Legitimate cron job setup for scheduled tasks

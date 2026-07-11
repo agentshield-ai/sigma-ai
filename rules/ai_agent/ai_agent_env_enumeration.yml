@@ -47,10 +47,14 @@ detection:
   # Note: "printenv VAR_NAME" is a single-variable lookup (benign), excluded via filter.
   selection_full_env_dump:
     event_type: tool_call
-    command|re: '(^|\s|;|&&|\|)(printenv\s*$|printenv\s*\||export\s+-p)'
+    command|re: '(?i)(^|\s|;|&&|\|)(printenv\s*$|printenv\s*\||export\s+-p)'
+  # Bare `env` dumps the whole environment (enumeration). Match `env` with no
+  # following token, or piped/redirected to capture the dump. `env` used as a
+  # command prefix (`env VAR=val cmd`, `env python`, `/usr/bin/env python`) is
+  # benign and must NOT match — the previous `\s+[^=]` arm flagged all of those.
   selection_env_bare:
     event_type: tool_call
-    command|re: '(^|\s|;|&&|\|)env(\s*$|\s*\||\s+[^=])'
+    command|re: '(?i)(^|\s|;|&&|\|)env(\s*$|\s*\||\s*>)'
   # env piped to any post-processor (sort, tee, less, head, etc.)
   selection_env_piped:
     event_type: tool_call
