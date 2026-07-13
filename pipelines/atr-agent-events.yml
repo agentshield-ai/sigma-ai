@@ -1,0 +1,225 @@
+# ATR surface fields -> agentshield agent_events taxonomy.
+#
+# Translates rules produced by ATR's generate-sigma.py (logsource
+# category ai_agent_content, ATR surface field names) into the
+# agent_events taxonomy used by the sigma-ai ruleset, in which every
+# event carries an event_type and the observed text sits in content,
+# arguments or tool_name.
+#
+# Surface mapping:
+#   user_input       -> event_type: user_input        field: content
+#   tool_response    -> event_type: tool_response     field: content
+#   agent_output     -> event_type: output_generation field: content
+#   tool_description -> event_type: tool_description  field: content
+#   tool_args        -> event_type: tool_call         field: arguments
+#   tool_name        -> event_type: tool_call         field: tool_name
+#   content          -> unchanged, no event_type constraint
+#
+# A rule that mixes surfaces from two different event groups cannot be
+# expressed as a single agent_events rule (the injected event_type
+# constraints would conflict); such rules fail conversion loudly and
+# must be split by hand.
+name: ATR surfaces to agentshield agent_events
+priority: 20
+transformations:
+  # ---- guards: refuse rules mixing surfaces across event groups ----
+  - id: atr_guard_mixed_ui_td
+    type: rule_failure
+    message: ATR rule mixes user_input and tool_description surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: user_input
+      - type: contains_field
+        field: tool_description
+  - id: atr_guard_mixed_ui_tr
+    type: rule_failure
+    message: ATR rule mixes user_input and tool_response surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: user_input
+      - type: contains_field
+        field: tool_response
+  - id: atr_guard_mixed_ui_ao
+    type: rule_failure
+    message: ATR rule mixes user_input and agent_output surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: user_input
+      - type: contains_field
+        field: agent_output
+  - id: atr_guard_mixed_ui_tc
+    type: rule_failure
+    message: ATR rule mixes user_input and tool_call surfaces (tool_args/tool_name); split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: user_input
+      - type: contains_field
+        field: tool_args
+  - id: atr_guard_mixed_tr_td
+    type: rule_failure
+    message: ATR rule mixes tool_response and tool_description surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_response
+      - type: contains_field
+        field: tool_description
+  - id: atr_guard_mixed_tr_ao
+    type: rule_failure
+    message: ATR rule mixes tool_response and agent_output surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_response
+      - type: contains_field
+        field: agent_output
+  - id: atr_guard_mixed_td_ao
+    type: rule_failure
+    message: ATR rule mixes tool_description and agent_output surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_description
+      - type: contains_field
+        field: agent_output
+  - id: atr_guard_mixed_td_tc
+    type: rule_failure
+    message: ATR rule mixes tool_description and tool_call surfaces (tool_args); a description is scanned on tool_description events, not tool_call. Split before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_description
+      - type: contains_field
+        field: tool_args
+  - id: atr_guard_mixed_tr_tc
+    type: rule_failure
+    message: ATR rule mixes tool_response and tool_call surfaces (tool_args); split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_response
+      - type: contains_field
+        field: tool_args
+  - id: atr_guard_mixed_ao_tc
+    type: rule_failure
+    message: ATR rule mixes agent_output and tool_call surfaces (tool_args); split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_output
+      - type: contains_field
+        field: tool_args
+  # ---- event typing: inject the matching event_type selection ----
+  - id: atr_event_user_input
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: user_input
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: user_input
+  - id: atr_event_tool_response
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_response
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_response
+  - id: atr_event_agent_output
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: output_generation
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_output
+  - id: atr_event_tool_description
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_description
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_description
+  - id: atr_event_tool_call_args
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_call
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_args
+  - id: atr_event_tool_call_name
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_call
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: tool_name
+  # ---- field renames ----
+  - id: atr_field_renames
+    type: field_name_mapping
+    mapping:
+      user_input: content
+      tool_response: content
+      agent_output: content
+      tool_description: content
+      tool_args: arguments
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+  # ---- logsource rewrite (last: earlier items match the original) ----
+  - id: atr_logsource
+    type: change_logsource
+    product: ai_agent
+    category: agent_events
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+
