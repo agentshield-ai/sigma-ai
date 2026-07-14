@@ -15,6 +15,17 @@
 #   tool_name        -> event_type: tool_call         field: tool_name
 #   content          -> unchanged, no event_type constraint
 #
+# Finer-grained logsource categories emitted by ATR's generate-sigma.py --all
+# map at category level (the category already identifies the event):
+#   ai_agent_prompt        -> event_type: user_input        (user_input -> content)
+#   ai_agent_tool_response -> event_type: tool_response     (tool_response -> content)
+#   ai_agent_tool_call     -> event_type: tool_call         (tool_args -> arguments)
+#   ai_agent_output        -> event_type: output_generation (agent_output -> content)
+#   ai_agent_other         -> unmapped, passes through untouched (trace.*/behavioral.*
+#                             surfaces have no agent_events counterpart yet)
+# A tool_call-category rule that also queries tool_description is refused:
+# descriptions are scanned on tool_description events, not tool_call.
+#
 # A rule that mixes surfaces from two different event groups cannot be
 # expressed as a single agent_events rule (the injected event_type
 # constraints would conflict); such rules fail conversion loudly and
@@ -222,4 +233,113 @@ transformations:
       - type: logsource
         product: ai_agent
         category: ai_agent_content
-
+  # ---- finer-grained categories from generate-sigma.py --all ----
+  - id: atr_guard_toolcall_with_description
+    type: rule_failure
+    message: ATR tool_call rule also queries tool_description; descriptions are scanned on tool_description events, not tool_call. Split before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_call
+      - type: contains_field
+        field: tool_description
+  - id: atr_cat_prompt_event
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: user_input
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_prompt
+  - id: atr_cat_prompt_renames
+    type: field_name_mapping
+    mapping:
+      user_input: content
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_prompt
+  - id: atr_cat_prompt_logsource
+    type: change_logsource
+    product: ai_agent
+    category: agent_events
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_prompt
+  - id: atr_cat_tool_response_event
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_response
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_response
+  - id: atr_cat_tool_response_renames
+    type: field_name_mapping
+    mapping:
+      tool_response: content
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_response
+  - id: atr_cat_tool_response_logsource
+    type: change_logsource
+    product: ai_agent
+    category: agent_events
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_response
+  - id: atr_cat_tool_call_event
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: tool_call
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_call
+  - id: atr_cat_tool_call_renames
+    type: field_name_mapping
+    mapping:
+      tool_args: arguments
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_call
+  - id: atr_cat_tool_call_logsource
+    type: change_logsource
+    product: ai_agent
+    category: agent_events
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_tool_call
+  - id: atr_cat_output_event
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: output_generation
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_output
+  - id: atr_cat_output_renames
+    type: field_name_mapping
+    mapping:
+      agent_output: content
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_output
+  - id: atr_cat_output_logsource
+    type: change_logsource
+    product: ai_agent
+    category: agent_events
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_output
