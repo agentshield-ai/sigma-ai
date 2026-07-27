@@ -13,6 +13,7 @@
 #   tool_description -> event_type: tool_description  field: content
 #   tool_args        -> event_type: tool_call         field: arguments
 #   tool_name        -> event_type: tool_call         field: tool_name
+#   agent_message    -> event_type: agent_message     field: content
 #   content          -> unchanged, no event_type constraint
 #
 # Finer-grained logsource categories emitted by ATR's generate-sigma.py --all
@@ -144,6 +145,61 @@ transformations:
         field: agent_output
       - type: contains_field
         field: tool_args
+  - id: atr_guard_mixed_am_ui
+    type: rule_failure
+    message: ATR rule mixes agent_message and user_input surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
+      - type: contains_field
+        field: user_input
+  - id: atr_guard_mixed_am_tr
+    type: rule_failure
+    message: ATR rule mixes agent_message and tool_response surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
+      - type: contains_field
+        field: tool_response
+  - id: atr_guard_mixed_am_td
+    type: rule_failure
+    message: ATR rule mixes agent_message and tool_description surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
+      - type: contains_field
+        field: tool_description
+  - id: atr_guard_mixed_am_tc
+    type: rule_failure
+    message: ATR rule mixes agent_message and tool_args surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
+      - type: contains_field
+        field: tool_args
+  - id: atr_guard_mixed_am_ao
+    type: rule_failure
+    message: ATR rule mixes agent_message and agent_output surfaces; split into one rule per event type before conversion.
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
+      - type: contains_field
+        field: agent_output
   # ---- event typing: inject the matching event_type selection ----
   - id: atr_event_user_input
     type: add_condition
@@ -211,6 +267,17 @@ transformations:
         category: ai_agent_content
       - type: contains_field
         field: tool_name
+  - id: atr_event_agent_message
+    type: add_condition
+    name: atr_event_type
+    conditions:
+      event_type: agent_message
+    rule_conditions:
+      - type: logsource
+        product: ai_agent
+        category: ai_agent_content
+      - type: contains_field
+        field: agent_message
   # ---- field renames ----
   - id: atr_field_renames
     type: field_name_mapping
@@ -220,6 +287,7 @@ transformations:
       agent_output: content
       tool_description: content
       tool_args: arguments
+      agent_message: content
     rule_conditions:
       - type: logsource
         product: ai_agent
