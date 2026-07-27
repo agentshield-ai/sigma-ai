@@ -16,7 +16,6 @@ date: "2026-02-16"
 modified: "2026-07-03"
 tags:
   - attack.defense-impairment
-  - attack.t1685
   - attack.initial-access
   - attack.t1566
 logsource:

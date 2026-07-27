@@ -43,16 +43,21 @@ detection:
       - 'HTTPS_PROXY='
       - 'HTTP_PROXY='
   selection_base_url_override:
-    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://'
+    content|re: '(?i)(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://'
   filter_canonical_base_url:
-    content|re: '(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://(api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|api\.mistral\.ai|api\.cohere\.com|api\.x\.ai)(/|"|$)'
+    content|re: '(?i)(ANTHROPIC_BASE_URL|OPENAI_BASE_URL|ANTHROPIC_API_URL|OPENAI_API_BASE|baseURL|base_url|apiBase)\s*[:=]\s*"?https?://(api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|api\.mistral\.ai|api\.cohere\.com|api\.x\.ai)(/|"|$)'
   selection_auth_header_to_external:
     event_type: outbound_request
     request.headers|contains:
       - 'Authorization: Bearer sk-'
       - 'x-api-key:'
+  # Anchor the canonical-host allowlist to the end of the host so an attacker
+  # host that merely embeds a provider domain (e.g. api.anthropic.com.evil.tld)
+  # is NOT whitelisted. Also corrects the TLDs: mistral is .ai and x.ai has no
+  # .com — the previous '\.(...)\.com' both mis-suffixed those and allowed the
+  # embed bypass.
   filter_canonical_destination:
-    destination.host|re: '\.(anthropic|openai|googleapis|mistral|cohere|x\.ai)\.com'
+    destination.host|re: '(?i)(^|\.)(anthropic\.com|openai\.com|googleapis\.com|mistral\.ai|cohere\.com|x\.ai)$'
   condition: (selection_endpoint_override and selection_base_url_override and not filter_canonical_base_url) or (selection_auth_header_to_external and not filter_canonical_destination)
 falsepositives:
   - Approved enterprise LLM proxies (Portkey, LiteLLM gateway, Cloudflare AI Gateway) on internal hosts — allowlist via destination.host

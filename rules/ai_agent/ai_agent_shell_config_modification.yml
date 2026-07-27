@@ -45,7 +45,7 @@ detection:
   # Edit/Write tool calls targeting shell config files
   selection_edit_write_tool:
     event_type: tool_call
-    command|re: '(Edit|Write):.*(\.bashrc|\.zshrc|\.profile|\.bash_profile|authorized_keys)'
+    command|re: '(?i)(Edit|Write):.*(\.bashrc|\.zshrc|\.profile|\.bash_profile|authorized_keys)'
   condition: selection_shell_append or selection_ssh_keys or selection_write_tool or selection_edit_write_tool
 falsepositives:
   - Legitimate shell customisation by developers adding aliases or PATH entries
