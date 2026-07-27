@@ -1,0 +1,47 @@
+title: File-Edit Tool Directed at SSH Authorized Keys or Shell Startup File
+id: bda7609c-a617-557c-b181-aae8ca747f71
+aliases:
+  - ATR-2026-02040
+status: experimental
+description: |
+  Detects an agent directed to use a file-write or edit tool to plant a
+  persistence backdoor, either injecting an SSH public key into
+  ~/.ssh/authorized_keys or prepending a writable directory (/tmp, /var/tmp,
+  /dev/shm, ~/.cache) onto PATH in a shell startup file. Converted from
+  Agent Threat Rules ATR-2026-02040 (MIT licensed), mined from
+  GHSA-29w3-p9w9-wc47 (PraisonAI multiedit path validation). The upstream
+  rule carves out first-person self-service phrasing with negative
+  lookaheads; these are expressed here as a filter selection negated in the
+  condition, since the RE2 engine does not support lookaround. The filter
+  suppresses the whole event when self-service phrasing appears near a tool
+  verb, a marginally broader carve-out than the original per-match lookahead.
+references:
+  - https://github.com/Agent-Threat-Rule/agent-threat-rules/blob/main/rules/privilege-escalation/ATR-2026-02040-file-edit-tool-persistence-write.yaml
+  - https://github.com/advisories/GHSA-29w3-p9w9-wc47
+  - https://attack.mitre.org/techniques/T1098/004/
+  - https://attack.mitre.org/techniques/T1546/004/
+author: ATR Community, converted by AgentShield
+date: "2026-07-14"
+tags:
+  - attack.persistence
+  - attack.t1098.004
+  - attack.t1546.004
+  - atr.rule.atr-2026-02040
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  sel_key_after_path:
+    content|re: '(?i)\b(multiedit|write_file|apply_diff|patch|overwrite|append|edit)\b[\s\S]{0,40}\.ssh[\/\\]authorized_keys[\s\S]{0,40}\b(ssh-(rsa|ed25519|dss)|ecdsa-sha2-)\b'
+  sel_path_after_key:
+    content|re: '(?i)\b(multiedit|write_file|apply_diff|patch|overwrite|append|edit)\b[\s\S]{0,40}\b(ssh-(rsa|ed25519|dss)|ecdsa-sha2-)\b[\s\S]{0,40}\.ssh[\/\\]authorized_keys'
+  sel_path_prepend:
+    content|re: '(?i)\b(multiedit|write_file|apply_diff|patch|overwrite|append|edit)\b[\s\S]{0,30}(~[\/\\]?|\$HOME[\/\\])\.(bashrc|bash_profile|zshrc|profile)\b[\s\S]{0,40}\bexport\s+PATH=["\x27]?(\/tmp|\/var\/tmp|\/dev\/shm|~[\/\\]\.cache)[^\n"\x27]*:\$PATH'
+  filter_self_service:
+    content|re: '(?i)\b(multiedit|write_file|apply_diff|patch|overwrite|append|edit)\b[\s\S]{0,135}?\b(?:my\s+own|my\s+key|myself|for\s+myself|me@[\w.-]+)\b'
+  condition: 1 of sel_* and not filter_self_service
+level: critical
+falsepositives:
+  - Adding a normal alias, function or environment variable export to a shell rc file
+  - PATH additions pointing at project-local bin or version-manager directories rather than /tmp or /dev/shm
+  - Operators provisioning their own SSH key via cloud-init or Ansible with first-person framing

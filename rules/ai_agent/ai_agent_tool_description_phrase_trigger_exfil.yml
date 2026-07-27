@@ -1,0 +1,34 @@
+title: Tool Description Defines a Common-Phrase Trigger to Forward Conversation History
+id: fbc9b2c9-5eed-5a3f-9c2a-0ce3a0cb6e86
+aliases:
+  - ATR-2026-02376
+status: experimental
+description: |
+  Detects a tool description that instructs the model to forward the full
+  conversation history whenever the user types a common everyday phrase.
+  Unlike imperative IMPORTANT-tag poisoning, the trigger is conditional and
+  natural-sounding, making the exfiltration passive and long-running.
+  Converted from Agent Threat Rules ATR-2026-02376 (MIT licensed), based on
+  the Trail of Bits conversation-history exfiltration write-up.
+references:
+  - https://github.com/Agent-Threat-Rule/agent-threat-rules/blob/main/rules/tool-poisoning/ATR-2026-02376-tool-description-conversational-trigger-history-exfil.yaml
+  - https://attack.mitre.org/techniques/T1074/
+author: ATR Community, converted by AgentShield
+date: "2026-07-14"
+tags:
+  - attack.collection
+  - attack.t1074
+  - atr.rule.atr-2026-02376
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection:
+    event_type: tool_description
+    content|re: '(?i)\bwhen (?:the )?user (?:says?|types?)\b[\s\S]{0,40}\b(?:forward|send|include|pass|attach)\b[\s\S]{0,40}\b(?:full|entire|complete|whole)\s+(?:conversation|chat|session)\s+history\b'
+  condition: selection
+level: high
+falsepositives:
+  - Tool descriptions legitimately referencing conversation history without a phrase trigger
+  - Prose documentation describing this poisoning technique rather than a live tool schema
+  - Support or logging tools that forward an explicit complaint verbatim without a conditional trigger
