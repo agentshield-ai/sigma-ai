@@ -1,0 +1,45 @@
+title: HTML Injection in Tool Call Argument Targeting a Human-Approval Dashboard
+id: 96454427-607b-52a9-a9ee-e4e912fb40eb
+aliases:
+  - ATR-2026-02102
+status: experimental
+description: |
+  Detects a tool-call argument carrying an HTML or JavaScript payload whose
+  target is a same-page approve/deny endpoint or embedding window, so that a
+  pending human-in-the-loop decision is self-approved before a human acts.
+  Closes the field-scoping gap left by tool_response-focused XSS rules.
+  Converted from Agent Threat Rules ATR-2026-02102 (MIT licensed), mined from
+  GHSA-63v4-w882-g4x2 (PraisonAI HTTPApproval) and GHSA-x975-rgx4-5fh4
+  (appium-mcp MCP-UI postMessage takeover).
+references:
+  - https://github.com/Agent-Threat-Rule/agent-threat-rules/blob/main/rules/tool-poisoning/ATR-2026-02102-html-injection-tool-arg-approval-ui-xss.yaml
+  - https://github.com/advisories/GHSA-63v4-w882-g4x2
+  - https://github.com/advisories/GHSA-x975-rgx4-5fh4
+  - https://attack.mitre.org/techniques/T1185/
+author: ATR Community, converted by AgentShield
+date: "2026-07-14"
+tags:
+  - attack.collection
+  - attack.t1185
+  - atr.rule.atr-2026-02102
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  sel_args_script:
+    event_type: tool_call
+    arguments|re: '(?i)</code>\s*<script[^>]{0,20}>[\s\S]{0,80}(?:decide|approve|/approve/)'
+  sel_args_handler:
+    event_type: tool_call
+    arguments|re: '(?i)\bon(?:error|load|focus)\s*=\s*[\x27"][\s\S]{0,120}(?:new\s+Image\s*\(\s*\)\.src\s*=\s*[\x27"][^\x27"]{0,80}(?:approve|decide|confirm|consent)|\.submit\s*\(\s*\)[\s\S]{0,40}(?:approve|decide|confirm|consent)|(?:approve|decide|confirm|consent)[\s\S]{0,40}\.submit\s*\(\s*\)|/(?:approve|decide)/)'
+  sel_args_img:
+    event_type: tool_call
+    arguments|re: '(?i)<(?:img|svg)\b[^>]{0,40}\bon(?:error|load)\s*=[^>]{0,120}(?:document\.forms|\.submit\s*\()'
+  sel_postmessage:
+    content|re: '(?i)(?:on(?:error|load)\s*=\s*[\x27"][\s\S]{0,40}|<script[^>]{0,20}>[\s\S]{0,40})window\.parent\.postMessage\s*\(\s*\{[\s\S]{0,60}\btool'
+  condition: 1 of sel_*
+level: high
+falsepositives:
+  - Server-authored approval-dashboard UI code that legitimately defines the decide/approve handler
+  - Security test fixtures exercising XSS payloads against the approval dashboard in a controlled suite
+  - Documentation or bug-report prose quoting the payload shape without an actual tool call carrying it

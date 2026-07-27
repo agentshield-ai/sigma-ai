@@ -1,0 +1,37 @@
+title: Actor Never-Breaks-Character Roleplay Jailbreak
+id: cb8e1b13-38cf-536e-bc43-d05c09b446a0
+aliases:
+  - ATR-2026-02005
+status: experimental
+description: |
+  Detects a DAN-style jailbreak framing two people as film actors who never
+  break character, then eliciting harmful continuations in character. The
+  never-break-character claim acts as an explicit refusal-suppression device.
+  Covers English and German variants; does not fire on generic mentions of
+  actors. Converted from Agent Threat Rules ATR-2026-02005 (MIT licensed),
+  recovered from the PINT false-negative corpus. Left unconstrained by
+  event_type so it also catches the framing arriving via poisoned tool
+  responses. The match is made case-insensitive here, unlike the upstream
+  rule whose case-sensitive pattern cannot match its own capitalised German
+  positive ("Schauspieler"); worth reporting to ATR.
+references:
+  - https://github.com/Agent-Threat-Rule/agent-threat-rules/blob/main/rules/prompt-injection/ATR-2026-02005-actor-never-breaks-character-roleplay-dan-style-.yaml
+  - https://attack.mitre.org/techniques/T1622/
+author: ATR Community, converted by AgentShield
+date: "2026-07-14"
+tags:
+  - attack.defense-impairment
+  - attack.t1622
+  - atr.rule.atr-2026-02005
+logsource:
+  product: ai_agent
+  category: agent_events
+detection:
+  selection:
+    content|re: '(?i)\b(actors?|schauspieler\w*)\b[\s\S]{0,250}\b(do\s+not\s+break|never\s+break|without\s+(?:even\s+)?break\w*|nicht\s+(?:eine\s+sekunde|einen\s+moment)?\s*(?:lang\s+)?aus\s+(?:ihr\w*|seiner)?\s*(?:rolle|figur|charakter\w*)|bleiben\s+immer|verharren\s+stets)\b'
+  condition: selection
+level: high
+falsepositives:
+  - Legitimate roleplay requests that do not attempt to remove safety constraints
+  - Chat content mentioning actors or acting technique without a never-break-character claim
+  - Entertainment-industry deployments where casting or coaching material co-occurs with character text
