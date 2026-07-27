@@ -80,6 +80,7 @@ def test_pipeline_loads(pipeline: ProcessingPipeline) -> None:
         ("tool_description|contains: '<IMPORTANT>'", "content", "tool_description"),
         ("tool_args|contains: '169.254.169.254'", "arguments", "tool_call"),
         ("tool_name|contains: 'shadow'", "tool_name", "tool_call"),
+        ("agent_message|contains: 'delegate this task'", "content", "agent_message"),
     ],
 )
 def test_surface_mapping(
@@ -144,3 +145,98 @@ detection:
     assert list(rule.detection.detections) == ["a"]
     assert rule.detection.parsed_condition[0].condition == "a"
 
+
+def _cat_rule(category: str, surface_line: str) -> str:
+    return f"""
+title: category fixture
+id: 77777777-7777-7777-7777-777777777777
+status: experimental
+logsource:
+    product: ai_agent
+    category: {category}
+detection:
+    a:
+        {surface_line}
+    condition: a
+"""
+
+
+@pytest.mark.parametrize(
+    ("category", "surface_line", "expected_field", "expected_event_type"),
+    [
+        ("ai_agent_prompt", "user_input|contains: 'ignore previous'", "content", "user_input"),
+        ("ai_agent_tool_response", "tool_response|contains: 'BEGIN PRIVATE KEY'", "content", "tool_response"),
+        ("ai_agent_tool_call", "tool_args|contains: '169.254.169.254'", "arguments", "tool_call"),
+        ("ai_agent_tool_call", "tool_name|contains: 'shadow'", "tool_name", "tool_call"),
+        ("ai_agent_output", "agent_output|contains: 'curl http'", "content", "output_generation"),
+    ],
+)
+def test_category_mapping(
+    pipeline: ProcessingPipeline,
+    category: str,
+    surface_line: str,
+    expected_field: str,
+    expected_event_type: str,
+) -> None:
+    rule = _apply(pipeline, _cat_rule(category, surface_line))
+    assert rule.logsource.category == "agent_events"
+    assert expected_field in _fields(rule)
+    event_sel = rule.detection.detections.get("atr_event_type")
+    assert event_sel is not None, "event_type selection was not injected"
+    assert event_sel.to_plain() == {"event_type": expected_event_type}
+    condition = rule.detection.parsed_condition[0].condition
+    assert condition.startswith("atr_event_type and ("), condition
+
+
+def test_tool_call_with_description_is_refused(pipeline: ProcessingPipeline) -> None:
+    mixed = """
+title: tool_call description fixture
+id: 88888888-8888-8888-8888-888888888888
+status: experimental
+logsource:
+    product: ai_agent
+    category: ai_agent_tool_call
+detection:
+    a:
+        tool_description|contains: '<IMPORTANT>'
+    condition: a
+"""
+    with pytest.raises(SigmaTransformationError):
+        _apply(pipeline, mixed)
+
+
+def test_agent_message_mixed_is_refused(pipeline: ProcessingPipeline) -> None:
+    mixed = """
+title: agent_message mixed fixture
+id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+status: experimental
+logsource:
+    product: ai_agent
+    category: ai_agent_content
+detection:
+    a:
+        agent_message|contains: 'x'
+    b:
+        user_input|contains: 'y'
+    condition: a and b
+"""
+    with pytest.raises(SigmaTransformationError):
+        _apply(pipeline, mixed)
+
+
+def test_other_category_passes_through(pipeline: ProcessingPipeline) -> None:
+    other = """
+title: other fixture
+id: 99999999-9999-9999-9999-999999999999
+status: experimental
+logsource:
+    product: ai_agent
+    category: ai_agent_other
+detection:
+    a:
+        trace.forbid_violation: true
+    condition: a
+"""
+    rule = _apply(pipeline, other)
+    assert rule.logsource.category == "ai_agent_other"
+    assert "atr_event_type" not in rule.detection.detections
