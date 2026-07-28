@@ -14,7 +14,7 @@ references:
   - https://infosecwriteups.com/prompt-injection-grew-up-now-it-moves-laterally-7530960abec5
 author: AgentShield
 date: "2026-03-30"
-modified: "2026-03-30"
+modified: "2026-07-28"
 tags:
   - attack.discovery
   - attack.t1083
@@ -41,12 +41,16 @@ detection:
       - 'gcloud storage ls'
       - 'az storage blob list'
       - 'gsutil ls -r'
-  selection_agent_tools:
+  # A find that names what it is looking for is locating a file, not enumerating
+  # the filesystem. `find / -name "papers.tar"` was the single largest source of
+  # false positives in wildclaw replay, at 13 of 23 alerts on a benign corpus.
+  # Hunting for credentials by name is still enumeration, so it is kept below.
+  filter_targeted_find:
+    command|re: '(?i)find\s+/[^|;&]*\s-name\s'
+  selection_sensitive_hunt:
     event_type: tool_call
-    command|contains:
-      - 'list_files'
-      - 'list_directory'
-  condition: selection_recursive_ls or selection_cloud_enum or selection_agent_tools
+    command|re: '(?i)find\s+/[^|;&]*\s-name\s+\S{0,12}(id_rsa|id_ed25519|id_ecdsa|authorized_keys|known_hosts|\.pem|\.ppk|\.kdbx|credential|\.npmrc|\.pypirc|\.netrc)'
+  condition: (selection_recursive_ls and not filter_targeted_find) or selection_sensitive_hunt or selection_cloud_enum
 falsepositives:
   - Legitimate deployment scripts that audit directory structure for compliance or backup purposes
   - Cloud cost-management tools enumerating S3/GCS buckets to identify unused resources

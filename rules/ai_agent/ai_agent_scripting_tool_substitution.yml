@@ -16,7 +16,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-02-26"
-modified: "2026-04-09"
+modified: "2026-07-28"
 tags:
   - attack.execution
   - attack.t1059
@@ -30,18 +30,18 @@ detection:
       - 'python'
       - 'socket'
       - 'connect'
-  selection_python_urllib_urlopen:
+  # A bare urllib GET used to match on python + urllib + urlopen, which is simply
+  # "fetch a URL in Python" and fired on benign arxiv retrieval during wildclaw
+  # replay. The threat is not the fetch, it is data leaving in the URL, so the
+  # selection now requires a query parameter that carries a payload. Generic
+  # query strings such as ?page=2 or ?q=search are not enough.
+  #
+  # The other dangerous shapes stay covered elsewhere: urllib or requests
+  # combined with exec, eval or __import__ is ai_agent_python_download_exec, and
+  # outbound bodies are selection_python_requests_post/put below.
+  selection_python_urllib_exfil:
     event_type: tool_call
-    command|contains|all:
-      - 'python'
-      - 'urllib'
-      - 'urlopen'
-  selection_python_urllib_request:
-    event_type: tool_call
-    command|contains|all:
-      - 'python'
-      - 'urllib'
-      - 'Request'
+    command|re: '(?i)(urlopen|urllib)[^\n]{0,200}\?[^\n]{0,120}\b(data|payload|content|secret|secrets|token|creds|credentials|dump|exfil|passwd|password|apikey|api_key)\s*='
   selection_python_requests_post:
     event_type: tool_call
     command|contains|all:

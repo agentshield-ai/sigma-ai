@@ -16,7 +16,7 @@ references:
   - https://arxiv.org/abs/2403.04783
 author: AgentShield
 date: "2026-01-25"
-modified: "2026-07-03"
+modified: "2026-07-28"
 tags:
   - attack.execution
   - attack.t1059
@@ -55,6 +55,14 @@ detection:
     command|contains|all:
       - 'wget'
       - '| python'
+  # Piping to bash or sh executes whatever arrives: the fetched bytes become the
+  # program. Piping to python only does so when python reads its program from
+  # stdin. With -c, -m or a script path the program is supplied locally and the
+  # pipe carries data for it to parse, which is ordinary fetch-and-process, not
+  # remote code execution. Observed as a false positive on
+  # `curl -sL <url> | python3 -c '<local parser>'` during wildclaw replay.
+  filter_python_local_program:
+    command|re: '(?i)\|\s*python[0-9.]*\s+(-c|-m|[^\s|;&]*\.py)\b'
   # Tightened: bash -c + curl/wget must also pipe to shell, eval, or source.
   # Plain "bash -c 'curl -o file URL'" (download-only) is not RCE.
   selection_bash_c_curl:
@@ -70,7 +78,7 @@ detection:
   selection_procsub_wget:
     event_type: tool_call
     command|re: '(?i)(bash|sh)\s+<\(wget'
-  condition: selection_curl_bash or selection_curl_sh or selection_wget_bash or selection_wget_sh or selection_curl_python or selection_wget_python or selection_bash_c_curl or selection_bash_c_wget or selection_procsub_curl or selection_procsub_wget
+  condition: selection_curl_bash or selection_curl_sh or selection_wget_bash or selection_wget_sh or ((selection_curl_python or selection_wget_python) and not filter_python_local_program) or selection_bash_c_curl or selection_bash_c_wget or selection_procsub_curl or selection_procsub_wget
 falsepositives:
   - Legitimate installer scripts from trusted vendors (e.g. Homebrew, Rust) that use pipe-to-shell patterns
   - CI/CD pipelines that bootstrap environments via curl-to-shell from internal artifact stores
